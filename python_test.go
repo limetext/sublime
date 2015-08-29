@@ -7,19 +7,21 @@ package sublime
 import (
 	"bytes"
 	"fmt"
-	"github.com/limetext/gopy/lib"
-	"github.com/limetext/lime-backend/lib"
-	_ "github.com/limetext/lime-backend/lib/commands"
-	"github.com/limetext/lime-backend/lib/log"
-	"github.com/limetext/lime-backend/lib/packages"
-	"github.com/limetext/lime-backend/lib/util"
-	"github.com/limetext/text"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/limetext/gopy/lib"
+	"github.com/limetext/lime-backend/lib"
+	_ "github.com/limetext/lime-backend/lib/commands"
+	"github.com/limetext/lime-backend/lib/items"
+	"github.com/limetext/lime-backend/lib/log"
+	"github.com/limetext/lime-backend/lib/sublime/python"
+	"github.com/limetext/lime-backend/lib/util"
+	"github.com/limetext/text"
 )
 
 var dummyClipboard string
@@ -54,10 +56,7 @@ func TestSublime(t *testing.T) {
 	if m, err := py.Import("sublime_plugin"); err != nil {
 		t.Fatal(err)
 	} else {
-		plugins := packages.ScanPlugins("testdata/", ".py")
-		for _, p := range plugins {
-			newPlugin(p, m)
-		}
+		items.Scan("testdata")
 	}
 
 	subl, err := py.Import("sublime")
@@ -65,10 +64,14 @@ func TestSublime(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	var _windowClass = py.Class{
+		Name:    "sublime.Window",
+		Pointer: (*python.Window)(nil),
+	}
 	if w, err := _windowClass.Alloc(1); err != nil {
 		t.Fatal(err)
 	} else {
-		(w.(*Window)).data = &backend.Window{}
+		(w.(*python.Window)).data = &backend.Window{}
 		subl.AddObject("test_window", w)
 	}
 

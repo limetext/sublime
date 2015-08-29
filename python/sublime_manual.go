@@ -2,21 +2,20 @@
 // Use of this source code is governed by a 2-clause
 // BSD-style license that can be found in the LICENSE file.
 
-package sublime
+package python
 
 import (
 	"fmt"
-	"github.com/limetext/gopy/lib"
-	"github.com/limetext/lime-backend/lib"
-	"github.com/limetext/lime-backend/lib/log"
-	"github.com/limetext/lime-backend/lib/packages"
-	"github.com/limetext/lime-backend/lib/render"
-	"github.com/limetext/lime-backend/lib/util"
-	"github.com/limetext/lime-backend/lib/watch"
 	"os"
 	"path"
 	"path/filepath"
 	"time"
+
+	"github.com/limetext/gopy/lib"
+	"github.com/limetext/lime-backend/lib"
+	"github.com/limetext/lime-backend/lib/log"
+	"github.com/limetext/lime-backend/lib/render"
+	"github.com/limetext/lime-backend/lib/util"
 )
 
 func sublime_Console(tu *py.Tuple, kwargs *py.Dict) (py.Object, error) {
@@ -73,7 +72,7 @@ func init() {
 	backend.GetEditor()
 	l := py.InitAndLock()
 	defer l.Unlock()
-	//	py.InitializeEx(false)
+
 	m, err := py.InitModule("sublime", sublime_methods)
 	if err != nil {
 		panic(err)
@@ -151,123 +150,30 @@ func init() {
 			panic(err)
 		}
 	}
-	py.AddToPath(backend.LIME_PACKAGES_PATH)
-	py.AddToPath(backend.LIME_USER_PACKAGES_PATH)
+
+	ed := backend.GetEditor()
+	py.AddToPath(ed.PackagesPath("shipped"))
+	py.AddToPath(ed.PackagesPath("user"))
 
 	gopaths := filepath.SplitList(os.ExpandEnv("$GOPATH"))
 	for _, gopath := range gopaths {
-		py.AddToPath(path.Join(gopath, "src", "github.com", "limetext", "lime-backend", "lib", "sublime"))
+		py.AddToPath(path.Join(gopath, "src", "github.com", "limetext", "lime-backend", "lib", "sublime", "python"))
 	}
 }
 
-// Wrapper for packages.Plugin and py.Module
-// merges Plugin.Reload and loadPlugin for watcher
-type plugin struct {
-	*packages.Plugin
-	m *py.Module
-}
-
-func newPlugin(pl *packages.Plugin, m *py.Module) (p *plugin) {
-	p = &plugin{pl, m}
-	p.FileChanged(p.Name())
-	if err := watcher.Watch(p.Name(), p); err != nil {
-		log.Errorf("Couldn't watch %s: %s", p.Name(), err)
-	}
-	p.loadKeyBindings()
-	p.loadSettings()
-	return
-}
-
-func (p *plugin) FileChanged(name string) {
-	p.Reload()
-	p.loadPlugin()
-}
-
-func (p *plugin) loadPlugin() {
-	fi := p.Get().([]os.FileInfo)
-	for _, f := range fi {
-		fn := f.Name()
-		s, err := py.NewUnicode(path.Base(p.Name()) + "." + fn[:len(fn)-3])
-		if err != nil {
-			log.Error(err)
-			return
-		}
-		if r, err := p.m.Base().CallMethodObjArgs("reload_plugin", s); err != nil {
-			log.Error(err)
-		} else if r != nil {
-			r.Decref()
-		}
-	}
-}
-
-func (p *plugin) load(pkg *packages.Packet) {
-	if err := pkg.Load(); err != nil {
-		log.Errorf("Failed to load packet %s: %s", pkg.Name(), err)
-	} else {
-		log.Info("Loaded %s", pkg.Name())
-		if err := watcher.Watch(pkg.Name(), pkg); err != nil {
-			log.Warn("Couldn't watch %s: %s", pkg.Name(), err)
-		}
-	}
-}
-
-func (p *plugin) loadKeyBindings() {
-	ed := backend.GetEditor()
-	tmp := ed.KeyBindings().Parent()
-
-	ed.KeyBindings().SetParent(p)
-	p.KeyBindings().Parent().KeyBindings().SetParent(tmp)
-
-	pt := path.Join(p.Name(), "Default.sublime-keymap")
-	p.load(packages.NewPacket(pt, p.KeyBindings().Parent().KeyBindings()))
-
-	pt = path.Join(p.Name(), "Default ("+ed.Plat()+").sublime-keymap")
-	p.load(packages.NewPacket(pt, p.KeyBindings()))
-}
-
-func (p *plugin) loadSettings() {
-	ed := backend.GetEditor()
-	tmp := ed.Settings().Parent()
-
-	ed.Settings().SetParent(p)
-	p.Settings().Parent().Settings().Parent().Settings().SetParent(tmp)
-
-	pt := path.Join(p.Name(), "Preferences.sublime-settings")
-	p.load(packages.NewPacket(pt, p.Settings().Parent().Settings().Parent().Settings()))
-
-	pt = path.Join(p.Name(), "Preferences ("+ed.Plat()+").sublime-settings")
-	p.load(packages.NewPacket(pt, p.Settings().Parent().Settings()))
-
-	pt = path.Join(backend.LIME_USER_PACKAGES_PATH, "Preferences.sublime-settings")
-	p.load(packages.NewPacket(pt, p.Settings()))
-}
-
-var watcher *watch.Watcher
+var Module *py.Module
 
 func onInit() {
 	l := py.NewLock()
 	defer l.Unlock()
-	m, err := py.Import("sublime_plugin")
-	if err != nil {
+
+	var err error
+	if Module, err = py.Import("sublime_plugin"); err != nil {
 		panic(err)
 	}
-	sys, err := py.Import("sys")
-	if err != nil {
+	if sys, err := py.Import("sys"); err != nil {
 		log.Debug(err)
 	} else {
 		defer sys.Decref()
 	}
-
-	if watcher, err = watch.NewWatcher(); err != nil {
-		log.Errorf("Couldn't create watcher: %s", err)
-	}
-
-	// TODO: add all plugins after supporting all commands
-	// plugins := packages.ScanPlugins(backend.LIME_PACKAGES_PATH, ".py")
-	// for _, p := range plugins {
-	// 	newPlugin(p, m)
-	// }
-	newPlugin(packages.NewPlugin(path.Join(backend.LIME_PACKAGES_PATH, "Vintageous"), ".py"), m)
-
-	go watcher.Observe()
 }
