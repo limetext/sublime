@@ -16,7 +16,7 @@ import (
 	"github.com/limetext/lime-backend/lib/loaders"
 	"github.com/limetext/lime-backend/lib/log"
 	"github.com/limetext/lime-backend/lib/render"
-	"github.com/limetext/lime-backend/lib/util"
+	"github.com/limetext/util"
 )
 
 type (

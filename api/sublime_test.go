@@ -15,7 +15,7 @@ import (
 	_ "github.com/limetext/commands"
 	"github.com/limetext/gopy/lib"
 	"github.com/limetext/lime-backend/lib"
-	"github.com/limetext/lime-backend/lib/util"
+	"github.com/limetext/util"
 )
 
 // Checking if we added necessary exported functions to sublime module

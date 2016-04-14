@@ -11,7 +11,7 @@ import (
 	"github.com/limetext/lime-backend/lib"
 	"github.com/limetext/lime-backend/lib/log"
 	"github.com/limetext/lime-backend/lib/packages"
-	_ "github.com/limetext/lime-backend/lib/sublime/api"
+	_ "github.com/limetext/sublime/api"
 )
 
 // Sublime plugin which is a single python file

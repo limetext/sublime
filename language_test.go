@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/limetext/lime-backend/lib/util"
+	"github.com/limetext/util"
 )
 
 func TestLanguageProviderLanguageFromScope(t *testing.T) {

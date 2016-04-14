@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/limetext/lime-backend/lib/loaders"
-	"github.com/limetext/lime-backend/lib/util"
+	"github.com/limetext/util"
 )
 
 func TestLoadTheme(t *testing.T) {

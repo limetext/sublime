@@ -6,11 +6,12 @@ package api
 
 import (
 	"fmt"
+
 	"github.com/limetext/gopy/lib"
 	"github.com/limetext/lime-backend/lib"
 	"github.com/limetext/lime-backend/lib/log"
-	"github.com/limetext/lime-backend/lib/util"
 	"github.com/limetext/text"
+	"github.com/limetext/util"
 )
 
 var (
