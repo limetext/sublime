@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"sort"
 
-	"github.com/limetext/lime-backend/lib/loaders"
+	"github.com/limetext/loaders"
 )
 
 type (

@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/limetext/lime-backend/lib/loaders"
+	"github.com/limetext/loaders"
 	"github.com/limetext/util"
 )
 

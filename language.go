@@ -14,8 +14,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/limetext/lime-backend/lib/loaders"
 	"github.com/limetext/lime-backend/lib/log"
+	"github.com/limetext/loaders"
 	"github.com/limetext/rubex"
 	"github.com/limetext/text"
 	"github.com/quarnster/parser"

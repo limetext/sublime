@@ -13,9 +13,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/limetext/lime-backend/lib/loaders"
 	"github.com/limetext/lime-backend/lib/log"
 	"github.com/limetext/lime-backend/lib/render"
+	"github.com/limetext/loaders"
 	"github.com/limetext/util"
 )
 
