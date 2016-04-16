@@ -1,17 +1,17 @@
 default: test
 
 test:
-	@go test -race $(go list ./... | grep -v /vendor/)
+	@go test -race $(shell go list ./... | grep -v vendor)
 fmt:
-	@go fmt ./...
+	@go fmt $(shell go list ./... | grep -v vendor | grep -v testdata)
 license:
 	@go run gen_license.go ./
 generate:
-	@go generate ./...
+	@go generate $(shell go list ./... | grep -v /vendor/)
 
 check_fmt:
-ifneq ($(shell gofmt -l ./),)
-	$(error code not fmted, run make fmt. $(shell gofmt -l ./))
+ifneq ($(shell gofmt -l ./ | grep -v vendor | grep -v testdata),)
+	$(error code not fmted, run make fmt. $(shell gofmt -l ./ | grep -v vendor | grep -v testdata))
 endif
 
 check_license:
