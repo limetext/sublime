@@ -1,7 +1,7 @@
 default: test
 
 test:
-	@go test -race ./...
+	@go test -race $(go list ./... | grep -v /vendor/)
 fmt:
 	@go fmt ./...
 license:

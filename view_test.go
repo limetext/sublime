@@ -28,7 +28,9 @@ func TestViewTransform(t *testing.T) {
 		v.Close()
 	}()
 
-	sc, err := LoadTheme("testdata/package/Monokai.tmTheme")
+	tm, err := LoadTheme("testdata/package/Monokai.tmTheme")
+	backend.GetEditor().AddColorScheme("test", &colorScheme{tm})
+	v.Settings().Set("colour_scheme", "test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,16 +43,16 @@ func TestViewTransform(t *testing.T) {
 	v.Insert(e, 0, string(d))
 	v.EndEdit(e)
 
-	if v.Transform(sc, text.Region{A: 0, B: 100}) != nil {
+	if v.Transform(text.Region{A: 0, B: 100}) != nil {
 		t.Error("Expected view.Transform return nil when the syntax isn't set yet")
 	}
 
 	v.Settings().Set("syntax", "testdata/package/Go.tmLanguage")
 
 	time.Sleep(time.Second)
-	a := v.Transform(sc, text.Region{A: 0, B: 100}).Transcribe()
-	v.Transform(sc, text.Region{A: 100, B: 200}).Transcribe()
-	c := v.Transform(sc, text.Region{A: 0, B: 100}).Transcribe()
+	a := v.Transform(text.Region{A: 0, B: 100}).Transcribe()
+	v.Transform(text.Region{A: 100, B: 200}).Transcribe()
+	c := v.Transform(text.Region{A: 0, B: 100}).Transcribe()
 	if !reflect.DeepEqual(a, c) {
 		t.Errorf("not equal:\n%v\n%v", a, c)
 	}
@@ -68,7 +70,9 @@ func BenchmarkViewTransformTranscribe(b *testing.B) {
 		v.Close()
 	}()
 
-	sc, err := LoadTheme("testdata/package/Monokai.tmTheme")
+	tm, err := LoadTheme("testdata/package/Monokai.tmTheme")
+	backend.GetEditor().AddColorScheme("test", &colorScheme{tm})
+	v.Settings().Set("colour_scheme", "test")
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -92,7 +96,7 @@ func BenchmarkViewTransformTranscribe(b *testing.B) {
 	wg.Wait()
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
-		v.Transform(sc, text.Region{A: 0, B: v.Size()}).Transcribe()
+		v.Transform(text.Region{A: 0, B: v.Size()}).Transcribe()
 	}
 	fmt.Println(util.Prof.String())
 }
