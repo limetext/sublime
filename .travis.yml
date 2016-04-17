@@ -34,7 +34,6 @@ install:
 
 script:
   - make travis_test
-  - make check_generate
   - make check_fmt
   - make check_license
 
