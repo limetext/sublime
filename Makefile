@@ -19,7 +19,7 @@ ifneq ($(shell go run gen_license.go ./),)
 	$(error license is not added to all files, run make license)
 endif
 
-check_generate: generate
+check_generate: config_oniguruma generate
 ifneq ($(shell git status --porcelain),)
 	$(error generated files are not correct, run make generate)
 endif
@@ -34,5 +34,5 @@ ifeq ($(TRAVIS_OS_NAME),osx)
 	brew install oniguruma python3
 endif
 
-travis_test: export PKG_CONFIG_PATH += $(PWD)/vendor/github.com/limetext/rubex:$(GOPATH)/src/github.com/limetext/rubex
-travis_test: test
+config_oniguruma: export PKG_CONFIG_PATH += $(PWD)/vendor/github.com/limetext/rubex:$(GOPATH)/src/github.com/limetext/rubex
+travis_test: config_oniguruma test

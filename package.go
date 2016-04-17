@@ -60,9 +60,14 @@ func newPKG(dir string) packages.Package {
 	p.defaultSettings.Settings().SetParent(ed)
 
 	// Initializing keybidings hierarchy
-	// editor <- default <- platform(package)
+	// default <- platform(package) <- editor.default
+	edDefault := ed.KeyBindings().Parent().KeyBindings().Parent().KeyBindings().Parent()
+	tmp := edDefault.KeyBindings().Parent()
+	edDefault.KeyBindings().SetParent(p)
 	p.KeyBindings().SetParent(p.defaultKB)
-	p.defaultKB.KeyBindings().SetParent(ed)
+	if tmp != nil {
+		p.defaultKB.KeyBindings().SetParent(tmp)
+	}
 
 	return p
 }

@@ -8,7 +8,7 @@ imports:
   subpackages:
   - lib
 - name: github.com/limetext/lime-backend
-  version: 8debd7a72f6a4ed9762ecdef753398e253f5a36c
+  version: 611a40109d39c34a2f38230acc65d322d9d2fa95
   subpackages:
   - lib
   - lib/keys
