@@ -1,5 +1,7 @@
 default: test
 
+all: fmt license generate
+
 test:
 	@go test -race $(shell go list ./... | grep -v vendor)
 fmt:

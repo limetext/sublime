@@ -12,6 +12,7 @@ import:
   - lib/parser
   - lib/render
 - package: github.com/limetext/loaders
+- package: github.com/limetext/commands
 - package: github.com/limetext/rubex
 - package: github.com/limetext/text
 - package: github.com/limetext/util
