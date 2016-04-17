@@ -4,7 +4,11 @@
 
 package sublime
 
-import "github.com/limetext/lime-backend/lib/parser"
+import (
+	"path/filepath"
+
+	"github.com/limetext/lime-backend/lib/parser"
+)
 
 // wrapper around Language implementing backend.Syntax interface
 type syntax struct {
@@ -33,4 +37,11 @@ func (s *syntax) Name() string {
 
 func (s *syntax) FileTypes() []string {
 	return s.l.FileTypes
+}
+
+func isSyntax(path string) bool {
+	if filepath.Ext(path) == ".tmLanguage" {
+		return true
+	}
+	return false
 }

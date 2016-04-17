@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/quarnster/completion/util"
+	"github.com/limetext/util"
 )
 
 func TestLoadMetadata(t *testing.T) {

@@ -18,7 +18,7 @@ import (
 )
 
 type (
-	// A sublime package
+	// Represents a sublime package
 	// TODO: iss#71
 	pkg struct {
 		dir  string
@@ -69,6 +69,8 @@ func newPKG(dir string) packages.Package {
 		p.defaultKB.KeyBindings().SetParent(tmp)
 	}
 
+	backend.OnUserPackagePathAdd.Add(p.loadUserSettings)
+
 	return p
 }
 
@@ -76,7 +78,10 @@ func (p *pkg) Load() {
 	log.Debug("Loading package %s", p.Name())
 	p.loadKeyBindings()
 	p.loadSettings()
+	p.loadUserSettings(backend.GetEditor().PackagesPath("user"))
 	p.loadPlugins()
+	// load files that could be anywhere in the package dir like syntax,
+	// colour scheme and preferences
 	filepath.Walk(p.Path(), p.scan)
 }
 
@@ -161,8 +166,11 @@ func (p *pkg) loadSettings() {
 	pt = filepath.Join(p.Path(), "Preferences ("+ed.Plat()+").sublime-settings")
 	log.Finest("Loading %s", pt)
 	packages.LoadJSON(pt, p.platformSettings.Settings())
+}
 
-	pt = filepath.Join(ed.PackagesPath("user"), "Preferences.sublime-settings")
+func (p *pkg) loadUserSettings(dir string) {
+	log.Fine("Loading %s user settings", p.Name())
+	pt := filepath.Join(dir, "Preferences.sublime-settings")
 	log.Finest("Loading %s", pt)
 	packages.LoadJSON(pt, p.Settings())
 }
@@ -186,13 +194,6 @@ func (c *colorScheme) Name() string {
 
 func isColorScheme(path string) bool {
 	if filepath.Ext(path) == ".tmTheme" {
-		return true
-	}
-	return false
-}
-
-func isSyntax(path string) bool {
-	if filepath.Ext(path) == ".tmLanguage" {
 		return true
 	}
 	return false
