@@ -22,8 +22,8 @@ ifneq ($(shell go run gen_license.go ./),)
 endif
 
 check_generate: generate
-ifneq ($(shell git status --porcelain),)
-	$(error generated files are not correct, run make generate. $(shell git status --porcelain))
+ifneq ($(shell git status --porcelain | grep "api/"),)
+	$(error generated files are not correct, run make generate. $(shell git status --porcelain | grep "api/"))
 endif
 
 glide:

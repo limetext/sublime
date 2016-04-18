@@ -1,19 +1,18 @@
 package: github.com/limetext/sublime
 import:
+- package: github.com/limetext/backend
+  subpackages:
+  - keys
+  - log
+  - packages
+  - parser
+  - render
 - package: github.com/limetext/gopy
   subpackages:
   - lib
-- package: github.com/limetext/backend
-  subpackages:
-  - lib
-  - lib/keys
-  - lib/log
-  - lib/packages
-  - lib/parser
-  - lib/render
 - package: github.com/limetext/loaders
-- package: github.com/limetext/commands
 - package: github.com/limetext/rubex
 - package: github.com/limetext/text
 - package: github.com/limetext/util
 - package: github.com/quarnster/parser
+- package: github.com/limetext/commands
