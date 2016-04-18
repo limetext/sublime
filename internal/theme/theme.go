@@ -23,16 +23,16 @@ type (
 	Color color.RGBA
 
 	// TODO(q): personally I don't care about the font style attributes
-	ThemeSettings map[string]Color
+	Settings map[string]Color
 
 	ScopeSetting struct {
 		Name     string
 		Scope    string
-		Settings ThemeSettings
+		Settings Settings
 	}
 	// For loading tmTheme files
 	Theme struct {
-		GutterSettings ThemeSettings
+		GutterSettings Settings
 		Name           string
 		Settings       []ScopeSetting
 		UUID           string
@@ -87,8 +87,8 @@ func (c *Color) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *ThemeSettings) UnmarshalJSON(data []byte) error {
-	*s = make(ThemeSettings)
+func (s *Settings) UnmarshalJSON(data []byte) error {
+	*s = make(Settings)
 	tmp := make(map[string]json.RawMessage)
 	if err := json.Unmarshal(data, &tmp); err != nil {
 		return err

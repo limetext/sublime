@@ -15,14 +15,14 @@ import (
 )
 
 type (
-	Metadata struct {
+	Preferences struct {
 		Name     string
 		Scope    string
-		Settings MetaSettings `json:"settings"`
+		Settings Settings `json:"settings"`
 		UUID     string
 	}
 
-	MetaSettings struct {
+	Settings struct {
 		IncreaseIndentPattern        internal.Regex
 		DecreaseIndentPattern        internal.Regex
 		BracketIndentNextLinePattern internal.Regex
@@ -39,25 +39,25 @@ type (
 	ShellVariables map[string]string
 )
 
-func LoadMetadata(filename string) (*Metadata, error) {
-	var md Metadata
+func LoadPreferences(filename string) (*Preferences, error) {
+	var pref Preferences
 	if d, err := ioutil.ReadFile(filename); err != nil {
-		return nil, fmt.Errorf("Unable to read metadata file: %s", err)
-	} else if err = loaders.LoadPlist(d, &md); err != nil {
-		return nil, fmt.Errorf("Unable to load metadata data: %s", err)
+		return nil, fmt.Errorf("Unable to read preferences file: %s", err)
+	} else if err = loaders.LoadPlist(d, &pref); err != nil {
+		return nil, fmt.Errorf("Unable to load preferences data: %s", err)
 	}
 
-	return &md, nil
+	return &pref, nil
 }
 
-func (m Metadata) String() string {
+func (m Preferences) String() string {
 	ret := fmt.Sprintf("%s - %s\n", m.Name, m.UUID)
 	ret += fmt.Sprintf("Scope: %s\n", m.Scope)
 	ret += fmt.Sprintf("Settings\n%s", m.Settings)
 	return ret
 }
 
-func (m MetaSettings) String() string {
+func (m Settings) String() string {
 	ret := fmt.Sprintf("\tIncreaseIndentPattern\n\t\t%s\n", m.IncreaseIndentPattern)
 	ret += fmt.Sprintf("\tDecreaseIndentPattern\n\t\t%s\n", m.DecreaseIndentPattern)
 	ret += fmt.Sprintf("\tBracketIndentNextLinePattern\n\t\t%s\n", m.BracketIndentNextLinePattern)
