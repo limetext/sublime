@@ -16,7 +16,7 @@ import (
 
 	"github.com/limetext/backend/log"
 	"github.com/limetext/loaders"
-	"github.com/limetext/sublime/internal"
+	"github.com/limetext/sublime/internal/textmate"
 	"github.com/limetext/text"
 	"github.com/quarnster/parser"
 )

@@ -13,7 +13,7 @@ import (
 )
 
 func TestLanguageProviderLanguageFromScope(t *testing.T) {
-	l, _ := Provider.LanguageFromFile("../../testdata/package/Go.tmLanguage")
+	l, _ := Provider.LanguageFromFile("../../../testdata/package/Go.tmLanguage")
 
 	if _, err := Provider.LanguageFromScope(l.ScopeName); err != nil {
 		t.Errorf("Tried to load %s, but got an error: %v", l.ScopeName, err)
@@ -25,8 +25,8 @@ func TestLanguageProviderLanguageFromScope(t *testing.T) {
 }
 
 func TestLanguageProviderLanguageFromFile(t *testing.T) {
-	if _, err := Provider.LanguageFromFile("../../testdata/package/Go.tmLanguage"); err != nil {
-		t.Errorf("Tried to load ../../testdata/Go.tmLanguage, but got an error: %v", err)
+	if _, err := Provider.LanguageFromFile("../../../testdata/package/Go.tmLanguage"); err != nil {
+		t.Errorf("Tried to load ../../../testdata/Go.tmLanguage, but got an error: %v", err)
 	}
 
 	if _, err := Provider.LanguageFromFile("MissingFile"); err == nil {
@@ -38,7 +38,7 @@ func TestTmLanguage(t *testing.T) {
 	files := []string{
 		"testdata/Property List (XML).tmLanguage",
 		"testdata/XML.plist",
-		"../../testdata/package/Go.tmLanguage",
+		"../../../testdata/package/Go.tmLanguage",
 	}
 	for _, fn := range files {
 		if _, err := Provider.LanguageFromFile(fn); err != nil {
@@ -63,7 +63,7 @@ func TestTmLanguage(t *testing.T) {
 			"text.xml.plist",
 		},
 		{
-			"../../testdata/main.go",
+			"../../../testdata/main.go",
 			"testdata/main.go.res",
 			"source.go",
 		},
@@ -109,7 +109,7 @@ func BenchmarkLanguage(b *testing.B) {
 	b.StopTimer()
 	tst := []string{
 		"language.go",
-		"../../testdata/main.go",
+		"../../../testdata/main.go",
 	}
 
 	var d0 []string
@@ -124,7 +124,7 @@ func BenchmarkLanguage(b *testing.B) {
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		for j := range d0 {
-			pr, err := getParser("../../testdata/package/Go.tmLanguage", d0[j])
+			pr, err := getParser("../../../testdata/package/Go.tmLanguage", d0[j])
 			if err != nil {
 				b.Fatal(err)
 				return

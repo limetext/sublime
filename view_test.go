@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/limetext/backend"
-	"github.com/limetext/sublime/internal/theme"
+	"github.com/limetext/sublime/internal/textmate/theme"
 	"github.com/limetext/text"
 	"github.com/limetext/util"
 )
