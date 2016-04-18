@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/limetext/backend"
+	"github.com/limetext/backend/packages"
 	_ "github.com/limetext/commands"
-	"github.com/limetext/lime-backend/lib"
-	"github.com/limetext/lime-backend/lib/packages"
 	_ "github.com/limetext/sublime/api"
 )
 

@@ -23,7 +23,7 @@ endif
 
 check_generate: generate
 ifneq ($(shell git status --porcelain),)
-	$(error generated files are not correct, run make generate)
+	$(error generated files are not correct, run make generate. $(shell git status --porcelain))
 endif
 
 glide:

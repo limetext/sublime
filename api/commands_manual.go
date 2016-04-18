@@ -7,9 +7,9 @@ package api
 import (
 	"fmt"
 
+	"github.com/limetext/backend"
+	"github.com/limetext/backend/log"
 	"github.com/limetext/gopy/lib"
-	"github.com/limetext/lime-backend/lib"
-	"github.com/limetext/lime-backend/lib/log"
 	"github.com/limetext/text"
 	"github.com/limetext/util"
 )

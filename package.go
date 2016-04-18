@@ -9,10 +9,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/limetext/lime-backend/lib"
-	"github.com/limetext/lime-backend/lib/keys"
-	"github.com/limetext/lime-backend/lib/log"
-	"github.com/limetext/lime-backend/lib/packages"
+	"github.com/limetext/backend"
+	"github.com/limetext/backend/keys"
+	"github.com/limetext/backend/log"
+	"github.com/limetext/backend/packages"
 	_ "github.com/limetext/sublime/api"
 	"github.com/limetext/text"
 )

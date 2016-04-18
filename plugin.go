@@ -7,10 +7,10 @@ package sublime
 import (
 	"path/filepath"
 
+	"github.com/limetext/backend"
+	"github.com/limetext/backend/log"
+	"github.com/limetext/backend/packages"
 	"github.com/limetext/gopy/lib"
-	"github.com/limetext/lime-backend/lib"
-	"github.com/limetext/lime-backend/lib/log"
-	"github.com/limetext/lime-backend/lib/packages"
 )
 
 // Sublime plugin which is a single python file

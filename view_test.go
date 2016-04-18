@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/limetext/lime-backend/lib"
+	"github.com/limetext/backend"
 	"github.com/limetext/text"
 	"github.com/limetext/util"
 )

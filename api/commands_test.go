@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/limetext/lime-backend/lib"
+	"github.com/limetext/backend"
 )
 
 func TestCommandGlueInit(t *testing.T) {

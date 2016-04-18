@@ -13,8 +13,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/limetext/lime-backend/lib/log"
-	"github.com/limetext/lime-backend/lib/render"
+	"github.com/limetext/backend/log"
+	"github.com/limetext/backend/render"
 	"github.com/limetext/loaders"
 	"github.com/limetext/util"
 )

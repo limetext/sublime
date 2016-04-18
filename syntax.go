@@ -7,7 +7,7 @@ package sublime
 import (
 	"path/filepath"
 
-	"github.com/limetext/lime-backend/lib/parser"
+	"github.com/limetext/backend/parser"
 )
 
 // wrapper around Language implementing backend.Syntax interface

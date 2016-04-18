@@ -7,8 +7,8 @@ package sublime
 import (
 	"testing"
 
+	"github.com/limetext/backend"
 	"github.com/limetext/gopy/lib"
-	"github.com/limetext/lime-backend/lib"
 	_ "github.com/limetext/sublime/api"
 )
 

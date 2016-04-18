@@ -12,9 +12,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/limetext/backend"
 	_ "github.com/limetext/commands"
 	"github.com/limetext/gopy/lib"
-	"github.com/limetext/lime-backend/lib"
 	"github.com/limetext/util"
 )
 
