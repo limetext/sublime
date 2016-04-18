@@ -2,7 +2,7 @@
 // Use of this source code is governed by a 2-clause
 // BSD-style license that can be found in the LICENSE file.
 
-package sublime
+package language
 
 import (
 	"encoding/json"
@@ -16,7 +16,7 @@ import (
 
 	"github.com/limetext/backend/log"
 	"github.com/limetext/loaders"
-	"github.com/limetext/rubex"
+	"github.com/limetext/sublime/internal"
 	"github.com/limetext/text"
 	"github.com/quarnster/parser"
 )
@@ -24,12 +24,6 @@ import (
 const maxiter = 10000
 
 type (
-	Regex struct {
-		re        *rubex.Regexp
-		lastIndex int
-		lastFound int
-	}
-
 	// For loading tmLanguage files
 	Language struct {
 		UnpatchedLanguage
@@ -60,23 +54,21 @@ type (
 
 	Captures []Capture
 
-	MatchObject []int
-
 	Pattern struct {
 		Named
 		Include        string
-		Match          Regex
+		Match          internal.Regex
 		Captures       Captures
-		Begin          Regex
+		Begin          internal.Regex
 		BeginCaptures  Captures
-		End            Regex
+		End            internal.Regex
 		EndCaptures    Captures
 		Patterns       []Pattern
 		owner          *Language // needed for include directives
 		cachedData     string
 		cachedPat      *Pattern
 		cachedPatterns []*Pattern
-		cachedMatch    MatchObject
+		cachedMatch    internal.MatchObject
 		hits           int
 		misses         int
 	}
@@ -85,7 +77,7 @@ type (
 		Pattern
 	}
 
-	LanguageParser struct {
+	Parser struct {
 		l    *Language
 		data []rune
 	}
@@ -151,13 +143,6 @@ Include: %s
 	return
 }
 
-func (r Regex) String() string {
-	if r.re == nil {
-		return "nil"
-	}
-	return fmt.Sprintf("%s   // %d, %d", r.re.String(), r.lastIndex, r.lastFound)
-}
-
 func (r *RootPattern) String() (ret string) {
 	for i := range r.Patterns {
 		ret += fmt.Sprintf("\t%s\n", r.Patterns[i])
@@ -194,7 +179,7 @@ func (l *Language) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (l *Language) copy() *Language {
+func (l *Language) Copy() *Language {
 	ret := &Language{}
 	ret.FileTypes = make([]string, len(l.FileTypes))
 	copy(ret.FileTypes, l.FileTypes)
@@ -211,19 +196,6 @@ func (l *Language) copy() *Language {
 
 func (r *RootPattern) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &r.Patterns)
-}
-
-func (r *Regex) UnmarshalJSON(data []byte) error {
-	str := string(data[1 : len(data)-1])
-	str = strings.Replace(str, "\\\\", "\\", -1)
-	str = strings.Replace(str, "\\n", "\n", -1)
-	str = strings.Replace(str, "\\t", "\t", -1)
-	if re, err := rubex.Compile(str); err != nil {
-		log.Warn("Couldn't compile language pattern %s: %s", str, err)
-	} else {
-		r.re = re
-	}
-	return nil
 }
 
 func (c *Captures) UnmarshalJSON(data []byte) error {
@@ -257,54 +229,7 @@ func (c *Captures) copy() *Captures {
 	return &ret
 }
 
-func (m MatchObject) fix(add int) {
-	for i := range m {
-		if m[i] != -1 {
-			m[i] += add
-		}
-	}
-}
-
-func (r *Regex) Find(data string, pos int) MatchObject {
-	if r.lastIndex > pos {
-		r.lastFound = 0
-	}
-	r.lastIndex = pos
-	for r.lastFound < len(data) {
-		ret := r.re.FindStringSubmatchIndex(data[r.lastFound:])
-		if ret == nil {
-			break
-		} else if (ret[0] + r.lastFound) < pos {
-			if ret[0] == 0 {
-				r.lastFound++
-			} else {
-				r.lastFound += ret[0]
-			}
-			continue
-		}
-		mo := MatchObject(ret)
-		mo.fix(r.lastFound)
-		return mo
-	}
-	return nil
-}
-
-func (r *Regex) copy() *Regex {
-	ret := &Regex{}
-	if r.re == nil {
-		return ret
-	}
-	if re, err := rubex.Compile(fmt.Sprint(r.re)); err != nil {
-		log.Warn("Error on copying regex: %s", err)
-	} else {
-		ret.re = re
-	}
-	ret.lastIndex = r.lastIndex
-	ret.lastFound = r.lastFound
-	return ret
-}
-
-func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret MatchObject) {
+func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
 	startIdx := -1
 	for i := 0; i < len(p.cachedPatterns); {
 		ip, im := p.cachedPatterns[i].Cache(data, pos)
@@ -329,7 +254,7 @@ func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret MatchObjec
 	return
 }
 
-func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret MatchObject) {
+func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
 	if p.cachedData == data {
 		if p.cachedMatch == nil {
 			return nil, nil
@@ -349,9 +274,9 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret MatchObject) {
 	}
 	p.misses++
 
-	if p.Match.re != nil {
+	if !p.Match.Empty() {
 		pat, ret = p, p.Match.Find(data, pos)
-	} else if p.Begin.re != nil {
+	} else if !p.Begin.Empty() {
 		pat, ret = p, p.Begin.Find(data, pos)
 	} else if p.Include != "" {
 		if z := p.Include[0]; z == '#' {
@@ -382,7 +307,7 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret MatchObject) {
 	return
 }
 
-func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, mo MatchObject, parent *parser.Node, capt Captures) {
+func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, mo internal.MatchObject, parent *parser.Node, capt Captures) {
 	ranges := make([]text.Region, len(mo)/2)
 	parentIndex := make([]int, len(ranges))
 	parents := make([]*parser.Node, len(parentIndex))
@@ -421,14 +346,14 @@ func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, 
 	}
 }
 
-func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo MatchObject) (ret *parser.Node) {
+func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo internal.MatchObject) (ret *parser.Node) {
 	ret = &parser.Node{Name: p.Name, Range: text.Region{A: mo[0], B: mo[1]}, P: d}
 	defer ret.UpdateRange()
 
-	if p.Match.re != nil {
+	if !p.Match.Empty() {
 		p.CreateCaptureNodes(data, pos, d, mo, ret, p.Captures)
 	}
-	if p.Begin.re == nil {
+	if p.Begin.Empty() {
 		return
 	}
 	if len(p.BeginCaptures) > 0 {
@@ -437,7 +362,7 @@ func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo Match
 		p.CreateCaptureNodes(data, pos, d, mo, ret, p.Captures)
 	}
 
-	if p.End.re == nil {
+	if p.End.Empty() {
 		return
 	}
 	var (
@@ -490,15 +415,15 @@ func (p *Pattern) copy(l *Language) *Pattern {
 	ret := &Pattern{}
 	ret.Named = p.Named
 	ret.Include = p.Include
-	ret.Match = *p.Match.copy()
+	ret.Match = *p.Match.Copy()
 	if p.Captures != nil {
 		ret.Captures = *p.Captures.copy()
 	}
-	ret.Begin = *p.Begin.copy()
+	ret.Begin = *p.Begin.Copy()
 	if p.BeginCaptures != nil {
 		ret.BeginCaptures = *p.BeginCaptures.copy()
 	}
-	ret.End = *p.End.copy()
+	ret.End = *p.End.Copy()
 	if p.EndCaptures != nil {
 		ret.EndCaptures = *p.EndCaptures.copy()
 	}
@@ -509,23 +434,23 @@ func (p *Pattern) copy(l *Language) *Pattern {
 	return ret
 }
 
-func (d *LanguageParser) Data(a, b int) string {
-	a = text.Clamp(0, len(d.data), a)
-	b = text.Clamp(0, len(d.data), b)
-	return string(d.data[a:b])
+func (p *Parser) Data(a, b int) string {
+	a = text.Clamp(0, len(p.data), a)
+	b = text.Clamp(0, len(p.data), b)
+	return string(p.data[a:b])
 }
 
-func (lp *LanguageParser) patch(lut []int, node *parser.Node) {
+func (p *Parser) patch(lut []int, node *parser.Node) {
 	node.Range.A = lut[node.Range.A]
 	node.Range.B = lut[node.Range.B]
 	for _, child := range node.Children {
-		lp.patch(lut, child)
+		p.patch(lut, child)
 	}
 }
 
-func (lp *LanguageParser) Parse() (*parser.Node, error) {
-	sdata := string(lp.data)
-	rn := parser.Node{P: lp, Name: lp.l.ScopeName}
+func (p *Parser) Parse() (*parser.Node, error) {
+	sdata := string(p.data)
+	rn := parser.Node{P: p, Name: p.l.ScopeName}
 	defer func() {
 		if r := recover(); r != nil {
 			log.Error("Panic during parse: %v\n", r)
@@ -534,7 +459,7 @@ func (lp *LanguageParser) Parse() (*parser.Node, error) {
 	}()
 	iter := maxiter
 	for i := 0; i < len(sdata) && iter > 0; iter-- {
-		pat, ret := lp.l.RootPattern.Cache(sdata, i)
+		pat, ret := p.l.RootPattern.Cache(sdata, i)
 		nl := strings.IndexAny(sdata[i:], "\n\r")
 		if nl != -1 {
 			nl += i
@@ -547,7 +472,7 @@ func (lp *LanguageParser) Parse() (*parser.Node, error) {
 				i++
 			}
 		} else {
-			n := pat.CreateNode(sdata, i, lp, ret)
+			n := pat.CreateNode(sdata, i, p, ret)
 			rn.Append(n)
 
 			i = n.Range.B
@@ -561,11 +486,15 @@ func (lp *LanguageParser) Parse() (*parser.Node, error) {
 			lut[i] = j
 			j++
 		}
-		lut[len(sdata)] = len(lp.data)
-		lp.patch(lut, &rn)
+		lut[len(sdata)] = len(p.data)
+		p.patch(lut, &rn)
 	}
 	if iter == 0 {
 		panic("reached maximum number of iterations")
 	}
 	return &rn, nil
+}
+
+func NewParser(l *Language, data []rune) *Parser {
+	return &Parser{l, data}
 }

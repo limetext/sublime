@@ -8,15 +8,16 @@ import (
 	"path/filepath"
 
 	"github.com/limetext/backend/parser"
+	"github.com/limetext/sublime/internal/language"
 )
 
 // wrapper around Language implementing backend.Syntax interface
 type syntax struct {
-	l *Language
+	l *language.Language
 }
 
 func newSyntax(path string) (*syntax, error) {
-	l, err := Provider.LanguageFromFile(path)
+	l, err := language.Provider.LanguageFromFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -27,8 +28,8 @@ func (s *syntax) Parser(data string) (parser.Parser, error) {
 	// we can't use syntax language(s.l) because it causes race conditions
 	// on concurrent parsing we could load the language from the file again
 	// but I think copying would be much faster
-	l := s.l.copy()
-	return &LanguageParser{l: l, data: []rune(data)}, nil
+	l := s.l.Copy()
+	return language.NewParser(l, []rune(data)), nil
 }
 
 func (s *syntax) Name() string {

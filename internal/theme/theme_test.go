@@ -2,7 +2,7 @@
 // Use of this source code is governed by a 2-clause
 // BSD-style license that can be found in the LICENSE file.
 
-package sublime
+package theme
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ func TestLoadTheme(t *testing.T) {
 	}
 	tests := []Test{
 		{
-			"testdata/package/Monokai.tmTheme",
+			"../../testdata/package/Monokai.tmTheme",
 			"testdata/Monokai.tmTheme.res",
 		},
 	}
@@ -47,7 +47,7 @@ func TestLoadTheme(t *testing.T) {
 }
 
 func TestLoadThemeFromPlist(t *testing.T) {
-	f := "testdata/package/Monokai.tmTheme"
+	f := "../../testdata/package/Monokai.tmTheme"
 	th, err := LoadTheme(f)
 	if err != nil {
 		t.Errorf("Tried to load %s, but got an error: %v", f, err)

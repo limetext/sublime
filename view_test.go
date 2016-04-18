@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/limetext/backend"
+	"github.com/limetext/sublime/internal/theme"
 	"github.com/limetext/text"
 	"github.com/limetext/util"
 )
@@ -28,7 +29,7 @@ func TestViewTransform(t *testing.T) {
 		v.Close()
 	}()
 
-	tm, err := LoadTheme("testdata/package/Monokai.tmTheme")
+	tm, err := theme.LoadTheme("testdata/package/Monokai.tmTheme")
 	backend.GetEditor().AddColorScheme("test", &colorScheme{tm})
 	v.Settings().Set("colour_scheme", "test")
 	if err != nil {
@@ -70,7 +71,7 @@ func BenchmarkViewTransformTranscribe(b *testing.B) {
 		v.Close()
 	}()
 
-	tm, err := LoadTheme("testdata/package/Monokai.tmTheme")
+	tm, err := theme.LoadTheme("testdata/package/Monokai.tmTheme")
 	backend.GetEditor().AddColorScheme("test", &colorScheme{tm})
 	v.Settings().Set("colour_scheme", "test")
 	if err != nil {

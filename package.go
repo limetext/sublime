@@ -14,6 +14,7 @@ import (
 	"github.com/limetext/backend/log"
 	"github.com/limetext/backend/packages"
 	_ "github.com/limetext/sublime/api"
+	"github.com/limetext/sublime/internal/theme"
 	"github.com/limetext/text"
 )
 
@@ -35,7 +36,7 @@ type (
 
 	// wrapper arount Theme implements backend.ColorScheme
 	colorScheme struct {
-		*Theme
+		*theme.Theme
 	}
 )
 
@@ -119,7 +120,7 @@ func (p *pkg) loadPlugin(path string) {
 
 func (p *pkg) loadColorScheme(path string) {
 	log.Fine("Loading %s package color scheme %s", p.Name(), path)
-	tm, err := LoadTheme(path)
+	tm, err := theme.LoadTheme(path)
 	if err != nil {
 		log.Warn("Error loading %s color scheme %s: %s", p.Name(), path, err)
 		return

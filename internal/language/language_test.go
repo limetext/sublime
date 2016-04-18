@@ -2,7 +2,7 @@
 // Use of this source code is governed by a 2-clause
 // BSD-style license that can be found in the LICENSE file.
 
-package sublime
+package language
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 )
 
 func TestLanguageProviderLanguageFromScope(t *testing.T) {
-	l, _ := Provider.LanguageFromFile("testdata/package/Go.tmLanguage")
+	l, _ := Provider.LanguageFromFile("../../testdata/package/Go.tmLanguage")
 
 	if _, err := Provider.LanguageFromScope(l.ScopeName); err != nil {
 		t.Errorf("Tried to load %s, but got an error: %v", l.ScopeName, err)
@@ -25,8 +25,8 @@ func TestLanguageProviderLanguageFromScope(t *testing.T) {
 }
 
 func TestLanguageProviderLanguageFromFile(t *testing.T) {
-	if _, err := Provider.LanguageFromFile("testdata/package/Go.tmLanguage"); err != nil {
-		t.Errorf("Tried to load testdata/Go.tmLanguage, but got an error: %v", err)
+	if _, err := Provider.LanguageFromFile("../../testdata/package/Go.tmLanguage"); err != nil {
+		t.Errorf("Tried to load ../../testdata/Go.tmLanguage, but got an error: %v", err)
 	}
 
 	if _, err := Provider.LanguageFromFile("MissingFile"); err == nil {
@@ -38,7 +38,7 @@ func TestTmLanguage(t *testing.T) {
 	files := []string{
 		"testdata/Property List (XML).tmLanguage",
 		"testdata/XML.plist",
-		"testdata/package/Go.tmLanguage",
+		"../../testdata/package/Go.tmLanguage",
 	}
 	for _, fn := range files {
 		if _, err := Provider.LanguageFromFile(fn); err != nil {
@@ -63,7 +63,7 @@ func TestTmLanguage(t *testing.T) {
 			"text.xml.plist",
 		},
 		{
-			"testdata/main.go",
+			"../../testdata/main.go",
 			"testdata/main.go.res",
 			"source.go",
 		},
@@ -88,9 +88,7 @@ func TestTmLanguage(t *testing.T) {
 			d0 = string(d)
 		}
 
-		if syn, err := syntaxFromLanguage(t3.syn); err != nil {
-			t.Error(err)
-		} else if pr, err := syn.Parser(d0); err != nil {
+		if pr, err := getParser(t3.syn, d0); err != nil {
 			t.Error(err)
 		} else if root, err := pr.Parse(); err != nil {
 			t.Error(err)
@@ -111,7 +109,7 @@ func BenchmarkLanguage(b *testing.B) {
 	b.StopTimer()
 	tst := []string{
 		"language.go",
-		"testdata/main.go",
+		"../../testdata/main.go",
 	}
 
 	var d0 []string
@@ -126,12 +124,7 @@ func BenchmarkLanguage(b *testing.B) {
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		for j := range d0 {
-			syn, err := newSyntax("testdata/package/Go.tmLanguage")
-			if err != nil {
-				b.Fatal(err)
-				return
-			}
-			pr, err := syn.Parser(d0[j])
+			pr, err := getParser("../../testdata/package/Go.tmLanguage", d0[j])
 			if err != nil {
 				b.Fatal(err)
 				return
@@ -146,10 +139,10 @@ func BenchmarkLanguage(b *testing.B) {
 	fmt.Println(util.Prof)
 }
 
-func syntaxFromLanguage(id string) (*syntax, error) {
-	l, err := Provider.GetLanguage(id)
+func getParser(fn string, data string) (*Parser, error) {
+	l, err := Provider.GetLanguage(fn)
 	if err != nil {
 		return nil, err
 	}
-	return &syntax{l: l}, nil
+	return NewParser(l, []rune(data)), nil
 }

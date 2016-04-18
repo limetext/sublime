@@ -2,7 +2,7 @@
 // Use of this source code is governed by a 2-clause
 // BSD-style license that can be found in the LICENSE file.
 
-package sublime
+package preferences
 
 import (
 	"encoding/json"
@@ -11,6 +11,7 @@ import (
 	"sort"
 
 	"github.com/limetext/loaders"
+	"github.com/limetext/sublime/internal"
 )
 
 type (
@@ -22,16 +23,16 @@ type (
 	}
 
 	MetaSettings struct {
-		IncreaseIndentPattern        Regex
-		DecreaseIndentPattern        Regex
-		BracketIndentNextLinePattern Regex
-		DisableIndentNextLinePattern Regex
-		UnIndentedLinePattern        Regex
-		CancelCompletion             Regex
+		IncreaseIndentPattern        internal.Regex
+		DecreaseIndentPattern        internal.Regex
+		BracketIndentNextLinePattern internal.Regex
+		DisableIndentNextLinePattern internal.Regex
+		UnIndentedLinePattern        internal.Regex
+		CancelCompletion             internal.Regex
 		ShowInSymbolList             int
 		ShowInIndexedSymbolList      int
-		SymbolTransformation         Regex
-		SymbolIndexTransformation    Regex
+		SymbolTransformation         internal.Regex
+		SymbolIndexTransformation    internal.Regex
 		ShellVariables               ShellVariables
 	}
 
