@@ -16,9 +16,9 @@ import (
 
 	"github.com/limetext/backend/log"
 	"github.com/limetext/loaders"
+	"github.com/limetext/sublime/internal/textmate"
 	"github.com/limetext/text"
 	"github.com/quarnster/parser"
-	"github.com/limetext/sublime/internal/textmate"
 )
 
 const maxiter = 10000

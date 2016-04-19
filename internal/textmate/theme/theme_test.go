@@ -13,7 +13,7 @@ import (
 	"github.com/limetext/util"
 )
 
-func TestLoadTheme(t *testing.T) {
+func TestLoad(t *testing.T) {
 	type Test struct {
 		in  string
 		out string
@@ -46,9 +46,9 @@ func TestLoadTheme(t *testing.T) {
 	}
 }
 
-func TestLoadThemeFromPlist(t *testing.T) {
+func TestLoadFromPlist(t *testing.T) {
 	f := "../../../testdata/package/Monokai.tmTheme"
-	th, err := LoadTheme(f)
+	th, err := Load(f)
 	if err != nil {
 		t.Errorf("Tried to load %s, but got an error: %v", f, err)
 	}
@@ -59,17 +59,17 @@ func TestLoadThemeFromPlist(t *testing.T) {
 	}
 }
 
-func TestLoadThemeFromNonPlist(t *testing.T) {
+func TestLoadFromNonPlist(t *testing.T) {
 	f := "testdata/Monokai.tmTheme.res"
-	_, err := LoadTheme(f)
+	_, err := Load(f)
 	if err == nil {
 		t.Errorf("Tried to load %s, expecting an error, but didn't get one", f)
 	}
 }
 
-func TestLoadThemeFromMissingFile(t *testing.T) {
+func TestLoadFromMissingFile(t *testing.T) {
 	f := "testdata/MissingFile"
-	_, err := LoadTheme(f)
+	_, err := Load(f)
 	if err == nil {
 		t.Errorf("Tried to load %s, expecting an error, but didn't get one", f)
 	}

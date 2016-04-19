@@ -11,13 +11,13 @@ import (
 	"github.com/limetext/util"
 )
 
-func TestLoadPreferences(t *testing.T) {
+func TestLoad(t *testing.T) {
 	var (
 		in  = "testdata/Comments.tmPreferences"
 		exp = "testdata/Comments.tmPreferences.res"
 	)
 
-	md, err := LoadPreferences(in)
+	md, err := Load(in)
 	if err != nil {
 		t.Fatalf("Error on loading %s: %s", in, err)
 	}

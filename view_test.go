@@ -29,7 +29,7 @@ func TestViewTransform(t *testing.T) {
 		v.Close()
 	}()
 
-	tm, err := theme.LoadTheme("testdata/package/Monokai.tmTheme")
+	tm, err := theme.Load("testdata/package/Monokai.tmTheme")
 	backend.GetEditor().AddColorScheme("test", &colorScheme{tm})
 	v.Settings().Set("colour_scheme", "test")
 	if err != nil {
@@ -71,7 +71,7 @@ func BenchmarkViewTransformTranscribe(b *testing.B) {
 		v.Close()
 	}()
 
-	tm, err := theme.LoadTheme("testdata/package/Monokai.tmTheme")
+	tm, err := theme.Load("testdata/package/Monokai.tmTheme")
 	backend.GetEditor().AddColorScheme("test", &colorScheme{tm})
 	v.Settings().Set("colour_scheme", "test")
 	if err != nil {

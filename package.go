@@ -120,7 +120,7 @@ func (p *pkg) loadPlugin(path string) {
 
 func (p *pkg) loadColorScheme(path string) {
 	log.Fine("Loading %s package color scheme %s", p.Name(), path)
-	tm, err := theme.LoadTheme(path)
+	tm, err := theme.Load(path)
 	if err != nil {
 		log.Warn("Error loading %s color scheme %s: %s", p.Name(), path, err)
 		return

@@ -39,7 +39,7 @@ type (
 	}
 )
 
-func LoadTheme(filename string) (*Theme, error) {
+func Load(filename string) (*Theme, error) {
 	var scheme Theme
 	if d, err := ioutil.ReadFile(filename); err != nil {
 		return nil, fmt.Errorf("Unable to read theme definition: %s", err)

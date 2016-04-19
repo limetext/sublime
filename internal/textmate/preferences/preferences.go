@@ -15,6 +15,7 @@ import (
 )
 
 type (
+	// for loading tmPreferences files
 	Preferences struct {
 		Name     string
 		Scope    string
@@ -39,7 +40,7 @@ type (
 	ShellVariables map[string]string
 )
 
-func LoadPreferences(filename string) (*Preferences, error) {
+func Load(filename string) (*Preferences, error) {
 	var pref Preferences
 	if d, err := ioutil.ReadFile(filename); err != nil {
 		return nil, fmt.Errorf("Unable to read preferences file: %s", err)
