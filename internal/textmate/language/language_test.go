@@ -12,24 +12,24 @@ import (
 	"github.com/limetext/util"
 )
 
-func TestLanguageProviderLanguageFromScope(t *testing.T) {
-	l, _ := Provider.LanguageFromFile("../../../testdata/package/Go.tmLanguage")
+func TestProviderLanguageFromScope(t *testing.T) {
+	l, _ := Load("../../../testdata/package/Go.tmLanguage")
 
-	if _, err := Provider.LanguageFromScope(l.ScopeName); err != nil {
+	if _, err := provider.LanguageFromScope(l.ScopeName); err != nil {
 		t.Errorf("Tried to load %s, but got an error: %v", l.ScopeName, err)
 	}
 
-	if _, err := Provider.LanguageFromScope("MissingScope"); err == nil {
+	if _, err := provider.LanguageFromScope("MissingScope"); err == nil {
 		t.Error("Tried to load MissingScope, expecting to get an error, but didn't")
 	}
 }
 
-func TestLanguageProviderLanguageFromFile(t *testing.T) {
-	if _, err := Provider.LanguageFromFile("../../../testdata/package/Go.tmLanguage"); err != nil {
+func TestProviderLanguageFromFile(t *testing.T) {
+	if _, err := Load("../../../testdata/package/Go.tmLanguage"); err != nil {
 		t.Errorf("Tried to load ../../../testdata/Go.tmLanguage, but got an error: %v", err)
 	}
 
-	if _, err := Provider.LanguageFromFile("MissingFile"); err == nil {
+	if _, err := Load("MissingFile"); err == nil {
 		t.Error("Tried to load MissingFile, expecting to get an error, but didn't")
 	}
 }
@@ -41,7 +41,7 @@ func TestTmLanguage(t *testing.T) {
 		"../../../testdata/package/Go.tmLanguage",
 	}
 	for _, fn := range files {
-		if _, err := Provider.LanguageFromFile(fn); err != nil {
+		if _, err := Load(fn); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -140,7 +140,7 @@ func BenchmarkLanguage(b *testing.B) {
 }
 
 func getParser(fn string, data string) (*Parser, error) {
-	l, err := Provider.GetLanguage(fn)
+	l, err := provider.GetLanguage(fn)
 	if err != nil {
 		return nil, err
 	}

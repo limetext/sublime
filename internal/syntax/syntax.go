@@ -29,11 +29,11 @@ type (
 		MetaContentScope     string `yaml:"meta_content_scope"`
 		MetaIncludePrototype string `yaml:"meta_include_prototype"`
 		Match                textmate.Regex
+		Set                  string
 		Scope                string
 		Captures             Captures
 		Pop                  bool
 		Push                 []Pattern
-		Set                  []Pattern
 	}
 
 	Captures []Capture

@@ -29,7 +29,7 @@ type (
 		UnpatchedLanguage
 	}
 
-	LanguageProvider struct {
+	Provider struct {
 		sync.Mutex
 		scope map[string]string
 	}
@@ -83,47 +83,51 @@ type (
 	}
 )
 
+func Load(filename string) (*Language, error) {
+	d, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("Couldn't load file %s: %s", filename, err)
+	}
+	var l Language
+	if err := loaders.LoadPlist(d, &l); err != nil {
+		return nil, err
+	}
+	provider.Add(l.ScopeName, filename)
+	return &l, nil
+}
+
 var (
-	Provider LanguageProvider
+	provider Provider
 	failed   = make(map[string]bool)
 )
 
 func init() {
-	Provider.scope = make(map[string]string)
+	provider.scope = make(map[string]string)
 }
 
-func (t *LanguageProvider) GetLanguage(id string) (*Language, error) {
+func (t *Provider) GetLanguage(id string) (*Language, error) {
 	if l, err := t.LanguageFromScope(id); err != nil {
-		return t.LanguageFromFile(id)
+		return Load(id)
 	} else {
 		return l, err
 	}
 }
 
-func (t *LanguageProvider) LanguageFromScope(id string) (*Language, error) {
+func (t *Provider) LanguageFromScope(id string) (*Language, error) {
 	t.Lock()
 	s, ok := t.scope[id]
 	t.Unlock()
 	if !ok {
 		return nil, errors.New("Can't handle id " + id)
 	} else {
-		return t.LanguageFromFile(s)
+		return Load(s)
 	}
 }
 
-func (t *LanguageProvider) LanguageFromFile(fn string) (*Language, error) {
-	d, err := ioutil.ReadFile(fn)
-	if err != nil {
-		return nil, fmt.Errorf("Couldn't load file %s: %s", fn, err)
-	}
-	var l Language
-	if err := loaders.LoadPlist(d, &l); err != nil {
-		return nil, err
-	}
+func (t *Provider) Add(scope, filename string) {
 	t.Lock()
 	defer t.Unlock()
-	t.scope[l.ScopeName] = fn
-	return &l, nil
+	t.scope[scope] = filename
 }
 
 func (p Pattern) String() (ret string) {
@@ -289,7 +293,7 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret textmate.MatchO
 		} else if z == '$' {
 			// TODO(q): Implement tmLanguage $ include directives
 			log.Warn("Unhandled include directive: %s", p.Include)
-		} else if l, err := Provider.GetLanguage(p.Include); err != nil {
+		} else if l, err := provider.GetLanguage(p.Include); err != nil {
 			if !failed[p.Include] {
 				log.Warn("Include directive %s failed: %s", p.Include, err)
 			}

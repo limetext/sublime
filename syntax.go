@@ -17,7 +17,7 @@ type syntax struct {
 }
 
 func newSyntax(path string) (*syntax, error) {
-	l, err := language.Provider.LanguageFromFile(path)
+	l, err := language.Load(path)
 	if err != nil {
 		return nil, err
 	}
