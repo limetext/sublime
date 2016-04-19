@@ -1,4 +1,4 @@
-package internal
+package textmate
 
 import (
 	"fmt"
@@ -40,6 +40,20 @@ func (r *Regex) UnmarshalJSON(data []byte) error {
 		r.re = re
 	}
 	return nil
+}
+
+func (r *Regex) SetYAML(tag string, value interface{}) bool {
+	str, ok := value.(string)
+	if !ok {
+		return false
+	}
+	if re, err := rubex.Compile(str); err != nil {
+		log.Warn("Couldn't compile language pattern %s: %s", str, err)
+		return false
+	} else {
+		r.re = re
+	}
+	return true
 }
 
 func (r *Regex) Find(data string, pos int) MatchObject {

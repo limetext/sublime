@@ -16,9 +16,9 @@ import (
 
 	"github.com/limetext/backend/log"
 	"github.com/limetext/loaders"
-	"github.com/limetext/sublime/internal/textmate"
 	"github.com/limetext/text"
 	"github.com/quarnster/parser"
+	"github.com/limetext/sublime/internal/textmate"
 )
 
 const maxiter = 10000
@@ -57,18 +57,18 @@ type (
 	Pattern struct {
 		Named
 		Include        string
-		Match          internal.Regex
+		Match          textmate.Regex
 		Captures       Captures
-		Begin          internal.Regex
+		Begin          textmate.Regex
 		BeginCaptures  Captures
-		End            internal.Regex
+		End            textmate.Regex
 		EndCaptures    Captures
 		Patterns       []Pattern
 		owner          *Language // needed for include directives
 		cachedData     string
 		cachedPat      *Pattern
 		cachedPatterns []*Pattern
-		cachedMatch    internal.MatchObject
+		cachedMatch    textmate.MatchObject
 		hits           int
 		misses         int
 	}
@@ -229,7 +229,7 @@ func (c *Captures) copy() *Captures {
 	return &ret
 }
 
-func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
+func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret textmate.MatchObject) {
 	startIdx := -1
 	for i := 0; i < len(p.cachedPatterns); {
 		ip, im := p.cachedPatterns[i].Cache(data, pos)
@@ -254,7 +254,7 @@ func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret internal.M
 	return
 }
 
-func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
+func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret textmate.MatchObject) {
 	if p.cachedData == data {
 		if p.cachedMatch == nil {
 			return nil, nil
@@ -307,7 +307,7 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchO
 	return
 }
 
-func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, mo internal.MatchObject, parent *parser.Node, capt Captures) {
+func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, mo textmate.MatchObject, parent *parser.Node, capt Captures) {
 	ranges := make([]text.Region, len(mo)/2)
 	parentIndex := make([]int, len(ranges))
 	parents := make([]*parser.Node, len(parentIndex))
@@ -346,7 +346,7 @@ func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, 
 	}
 }
 
-func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo internal.MatchObject) (ret *parser.Node) {
+func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo textmate.MatchObject) (ret *parser.Node) {
 	ret = &parser.Node{Name: p.Name, Range: text.Region{A: mo[0], B: mo[1]}, P: d}
 	defer ret.UpdateRange()
 
