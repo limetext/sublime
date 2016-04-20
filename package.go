@@ -171,7 +171,7 @@ func (p *pkg) loadSettings() {
 
 func (p *pkg) loadUserSettings(dir string) {
 	log.Fine("Loading %s user settings", p.Name())
-	pt := filepath.Join(dir, "Preferences.sublime-settings")
+	pt := filepath.Join(dir, p.Name()+".sublime-settings")
 	log.Finest("Loading %s", pt)
 	packages.LoadJSON(pt, p.Settings())
 }
