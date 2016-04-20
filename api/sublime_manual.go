@@ -64,43 +64,12 @@ func sublime_set_timeout(tu *py.Tuple, kwargs *py.Dict) (py.Object, error) {
 	return toPython(nil)
 }
 
-func sublime_PackagesPath(tu *py.Tuple) (py.Object, error) {
-	var (
-		arg1 string
-	)
-	if tu.Size() == 0 {
-		arg1 = "shipped"
-	} else if v, err := tu.GetItem(0); err != nil {
-		return nil, err
-	} else {
-		if v3, err2 := fromPython(v); err2 != nil {
-			return nil, err2
-		} else {
-			if v2, ok := v3.(string); !ok {
-				return nil, fmt.Errorf("Expected type string for backend.Editor.PackagesPath() arg1, not %s", v.Type())
-			} else {
-				arg1 = v2
-			}
-		}
-	}
-	ret0 := backend.GetEditor().PackagesPath(arg1)
-	var err error
-	var pyret0 py.Object
-
-	pyret0, err = toPython(ret0)
-	if err != nil {
-		return nil, err
-	}
-	return pyret0, err
-}
-
 var sublime_manual_methods = []py.Method{
 	{Name: "console", Func: sublime_Console},
 	{Name: "set_timeout", Func: sublime_set_timeout},
 	{Name: "packages_path", Func: sublime_PackagesPath},
 }
 
-// TODO: check how many times is this function running
 func init() {
 	l := py.InitAndLock()
 	defer l.Unlock()

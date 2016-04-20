@@ -1,5 +1,3 @@
-default: test
-
 all: fmt license generate
 
 test:

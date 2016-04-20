@@ -43,7 +43,7 @@ type (
 func newPKG(dir string) packages.Package {
 	p := &pkg{
 		dir:              dir,
-		name:             filepath.Base(dir),
+		name:             pkgName(dir),
 		platformSettings: new(text.HasSettings),
 		defaultSettings:  new(text.HasSettings),
 		defaultKB:        new(keys.HasKeyBindings),
@@ -70,7 +70,7 @@ func newPKG(dir string) packages.Package {
 		p.defaultKB.KeyBindings().SetParent(tmp)
 	}
 
-	backend.OnUserPackagePathAdd.Add(p.loadUserSettings)
+	backend.OnUserPathAdd.Add(p.loadUserSettings)
 
 	return p
 }
@@ -79,7 +79,7 @@ func (p *pkg) Load() {
 	log.Debug("Loading package %s", p.Name())
 	p.loadKeyBindings()
 	p.loadSettings()
-	p.loadUserSettings(backend.GetEditor().PackagesPath("user"))
+	p.loadUserSettings(backend.GetEditor().UserPath())
 	p.loadPlugins()
 	// load files that could be anywhere in the package dir like syntax,
 	// colour scheme and preferences
@@ -200,12 +200,27 @@ func isColorScheme(path string) bool {
 	return false
 }
 
+func pkgName(dir string) string {
+	return filepath.Base(dir)
+}
+
 // Any directory in sublime is a package
 func isPKG(dir string) bool {
 	fi, err := os.Stat(dir)
 	if err != nil || !fi.IsDir() {
 		return false
 	}
+
+	name := pkgName(dir)
+	ed := backend.GetEditor()
+	if ignoreds, ok := ed.Settings().Get("ignored_packages").([]interface{}); ok {
+		for _, ignored := range ignoreds {
+			if ignored == name {
+				return false
+			}
+		}
+	}
+
 	return true
 }
 
