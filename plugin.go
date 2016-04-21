@@ -7,7 +7,6 @@ package sublime
 import (
 	"path/filepath"
 
-	"github.com/limetext/backend"
 	"github.com/limetext/backend/log"
 	"github.com/limetext/backend/packages"
 	"github.com/limetext/gopy/lib"
@@ -68,32 +67,14 @@ var (
 	module *py.Module
 )
 
-func onInit() {
-	l := py.NewLock()
-	defer l.Unlock()
-	var err error
-	if module, err = py.Import("sublime_plugin"); err != nil {
-		log.Error("Error importing sublime_plugin: %s", err)
-		packages.Unregister(pluginRecord)
-		// TODO: we shouldn't completely unregister packagerecord some
-		// packages contain just syntaxes or themes
-		packages.Unregister(packageRecord)
-	}
-}
-
 func pyAddPath(p string) {
 	l := py.NewLock()
 	defer l.Unlock()
 	py.AddToPath(p)
 }
 
-func init() {
-	// Assuming there is a sublime_plugin.py file in the current directory
-	// for that we should add current directory to python paths
-	// Every package that imports sublime package should have a copy of
-	// sublime_plugin.py file in the "." directory
-	pyAddPath(".")
-	backend.OnInit.Add(onInit)
-	backend.OnPackagesPathAdd.Add(pyAddPath)
-	packages.Register(pluginRecord)
+func pyImport(name string) (*py.Module, error) {
+	l := py.NewLock()
+	defer l.Unlock()
+	return py.Import(name)
 }

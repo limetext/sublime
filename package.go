@@ -80,7 +80,11 @@ func (p *pkg) Load() {
 	p.loadKeyBindings()
 	p.loadSettings()
 	p.loadUserSettings(backend.GetEditor().UserPath())
-	p.loadPlugins()
+	// When we failed on importing sublime_plugin module we continue
+	// loading packages but not package plugins
+	if module != nil {
+		p.loadPlugins()
+	}
 	// load files that could be anywhere in the package dir like syntax,
 	// colour scheme and preferences
 	filepath.Walk(p.Path(), p.scan)
@@ -226,6 +230,22 @@ func isPKG(dir string) bool {
 
 var packageRecord = &packages.Record{isPKG, newPKG}
 
-func init() {
+func onInit() {
 	packages.Register(packageRecord)
+	var err error
+	if module, err = pyImport("sublime_plugin"); err != nil {
+		log.Error("Error importing sublime_plugin: %s", err)
+		return
+	}
+	// Assuming there is a sublime_plugin.py file in the current directory
+	// for that we should add current directory to python paths
+	// Every package that imports sublime package should have a copy of
+	// sublime_plugin.py file in the "." directory
+	pyAddPath(".")
+	backend.OnPackagesPathAdd.Add(pyAddPath)
+	packages.Register(pluginRecord)
+}
+
+func init() {
+	backend.OnInit.Add(onInit)
 }
