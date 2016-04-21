@@ -45,6 +45,8 @@ func (p *plugin) Load() {
 	}
 }
 
+func (p *plugin) UnLoad() {}
+
 func (p *plugin) Name() string {
 	return p.name
 }

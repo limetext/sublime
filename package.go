@@ -90,6 +90,8 @@ func (p *pkg) Load() {
 	filepath.Walk(p.Path(), p.scan)
 }
 
+func (p *pkg) UnLoad() {}
+
 func (p *pkg) Path() string {
 	return p.dir
 }
@@ -231,17 +233,17 @@ func isPKG(dir string) bool {
 var packageRecord = &packages.Record{isPKG, newPKG}
 
 func onInit() {
+	// Assuming there is a sublime_plugin.py file in the current directory
+	// for that we should add current directory to python paths
+	// Every package that imports sublime package should have a copy of
+	// sublime_plugin.py file in the "." directory
+	pyAddPath(".")
 	packages.Register(packageRecord)
 	var err error
 	if module, err = pyImport("sublime_plugin"); err != nil {
 		log.Error("Error importing sublime_plugin: %s", err)
 		return
 	}
-	// Assuming there is a sublime_plugin.py file in the current directory
-	// for that we should add current directory to python paths
-	// Every package that imports sublime package should have a copy of
-	// sublime_plugin.py file in the "." directory
-	pyAddPath(".")
 	backend.OnPackagesPathAdd.Add(pyAddPath)
 	packages.Register(pluginRecord)
 }
