@@ -1,10 +1,10 @@
-hash: 8c1ac4b6baea0fe7ec6069b6e3bed963ba73a5cba408214a3080ffe221bda2f6
-updated: 2016-04-18T12:25:44.265082454+04:30
+hash: a18b463a7fb6c57cf4c3dc28f7b89c04b0a63a7a16f00949e5dbb960d8b1ea14
+updated: 2016-04-21T13:34:37.091911845+04:30
 imports:
 - name: github.com/atotto/clipboard
   version: bb272b845f1112e10117e3e45ce39f690c0001ad
 - name: github.com/limetext/backend
-  version: 72d8a70cfe64ccfa3195a393cee6ca012f434c92
+  version: 8c28e589f7a7fa7ab7cfc9e9e1403220469cd33d
   subpackages:
   - keys
   - log
@@ -35,4 +35,6 @@ imports:
   version: 8991807ce6d383a41077a642b7b381eba1df7064
 - name: gopkg.in/fsnotify.v1
   version: 836bfd95fecc0f1511dd66bdbf2b5b61ab8b00b6
+- name: gopkg.in/yaml.v1
+  version: 9f9df34309c04878acc86042b16630b0f696e1de
 devImports: []

@@ -1,6 +1,7 @@
 package: github.com/limetext/sublime
 import:
 - package: github.com/limetext/backend
+  version: master
   subpackages:
   - keys
   - log
@@ -11,8 +12,12 @@ import:
   subpackages:
   - lib
 - package: github.com/limetext/loaders
+  version: master
 - package: github.com/limetext/rubex
 - package: github.com/limetext/text
+  version: master
 - package: github.com/limetext/util
+  version: master
 - package: github.com/quarnster/parser
 - package: github.com/limetext/commands
+  version: master

@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/going/toolkit/log"
+	"github.com/limetext/backend/log"
 	"github.com/limetext/rubex"
 )
 
