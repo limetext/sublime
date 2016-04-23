@@ -5,7 +5,7 @@ test:
 fmt:
 	@go fmt $(shell go list ./... | grep -v vendor | grep -v testdata)
 license:
-	@go run gen_license.go ./
+	@go run $(GOPATH)/src/github.com/limetext/tasks/gen_license.go
 generate:
 	@go generate $(shell go list ./... | grep -v /vendor/)
 
@@ -15,14 +15,15 @@ ifneq ($(shell gofmt -l ./ | grep -v vendor | grep -v testdata),)
 endif
 
 check_license:
-ifneq ($(shell go run gen_license.go ./),)
-	$(error license is not added to all files, run make license)
-endif
+	@go run $(GOPATH)/src/github.com/limetext/tasks/gen_license.go -check
 
 check_generate: generate
 ifneq ($(shell git status --porcelain | grep "api/"),)
 	$(error generated files are not correct, run make generate. $(shell git status --porcelain | grep "api/"))
 endif
+
+tasks:
+	go get -d -u github.com/limetext/tasks
 
 glide:
 	go get -v -u github.com/Masterminds/glide
