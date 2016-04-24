@@ -30,7 +30,7 @@ addons:
       - python3.5-dev
 
 install:
-  - make travis glide tasks
+  - make travis glide cover_dep tasks
 
 script:
   - make travis_test
