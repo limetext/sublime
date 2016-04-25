@@ -11,7 +11,7 @@ import (
 	"sort"
 
 	"github.com/limetext/loaders"
-	"github.com/limetext/sublime/internal/textmate"
+	"github.com/limetext/sublime/internal"
 )
 
 type (
@@ -24,16 +24,16 @@ type (
 	}
 
 	Settings struct {
-		IncreaseIndentPattern        textmate.Regex
-		DecreaseIndentPattern        textmate.Regex
-		BracketIndentNextLinePattern textmate.Regex
-		DisableIndentNextLinePattern textmate.Regex
-		UnIndentedLinePattern        textmate.Regex
-		CancelCompletion             textmate.Regex
+		IncreaseIndentPattern        internal.Regex
+		DecreaseIndentPattern        internal.Regex
+		BracketIndentNextLinePattern internal.Regex
+		DisableIndentNextLinePattern internal.Regex
+		UnIndentedLinePattern        internal.Regex
+		CancelCompletion             internal.Regex
 		ShowInSymbolList             int
 		ShowInIndexedSymbolList      int
-		SymbolTransformation         textmate.Regex
-		SymbolIndexTransformation    textmate.Regex
+		SymbolTransformation         internal.Regex
+		SymbolIndexTransformation    internal.Regex
 		ShellVariables               ShellVariables
 	}
 

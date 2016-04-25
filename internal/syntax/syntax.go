@@ -6,10 +6,10 @@ package syntax
 
 import (
 	"io/ioutil"
-	"sort"
 
-	"github.com/limetext/sublime/internal/textmate"
 	"gopkg.in/yaml.v1"
+
+	"github.com/limetext/sublime/internal"
 )
 
 type (
@@ -28,19 +28,12 @@ type (
 		MetaScope            string `yaml:"meta_scope"`
 		MetaContentScope     string `yaml:"meta_content_scope"`
 		MetaIncludePrototype string `yaml:"meta_include_prototype"`
-		Match                textmate.Regex
+		Match                internal.Regex
 		Set                  string
 		Scope                string
-		Captures             Captures
+		Captures             internal.Captures
 		Pop                  bool
 		Push                 []Pattern
-	}
-
-	Captures []Capture
-
-	Capture struct {
-		Key  int
-		Name string
 	}
 )
 
@@ -56,34 +49,4 @@ func Load(filename string) (*Syntax, error) {
 	}
 
 	return &syn, nil
-}
-
-func (c *Captures) SetYAML(tag string, value interface{}) bool {
-	tmp, ok := value.(map[interface{}]interface{})
-	if !ok {
-		return false
-	}
-	for k, v := range tmp {
-		*c = append(*c, Capture{Key: k.(int), Name: v.(string)})
-	}
-	sort.Sort(c)
-	return true
-}
-
-func (c *Captures) Len() int {
-	return len(*c)
-}
-
-func (c *Captures) Less(i, j int) bool {
-	return (*c)[i].Key < (*c)[j].Key
-}
-
-func (c *Captures) Swap(i, j int) {
-	(*c)[i], (*c)[j] = (*c)[j], (*c)[i]
-}
-
-func (c *Captures) copy() *Captures {
-	ret := make(Captures, len(*c))
-	copy(ret, *c)
-	return &ret
 }

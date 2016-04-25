@@ -9,14 +9,12 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"sort"
-	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/limetext/backend/log"
 	"github.com/limetext/loaders"
-	"github.com/limetext/sublime/internal/textmate"
+	"github.com/limetext/sublime/internal"
 	"github.com/limetext/text"
 	"github.com/quarnster/parser"
 )
@@ -43,32 +41,21 @@ type (
 		ScopeName      string
 	}
 
-	Named struct {
-		Name string
-	}
-
-	Capture struct {
-		Key int
-		Named
-	}
-
-	Captures []Capture
-
 	Pattern struct {
-		Named
+		internal.Named
 		Include        string
-		Match          textmate.Regex
-		Captures       Captures
-		Begin          textmate.Regex
-		BeginCaptures  Captures
-		End            textmate.Regex
-		EndCaptures    Captures
+		Match          internal.Regex
+		Captures       internal.Captures
+		Begin          internal.Regex
+		BeginCaptures  internal.Captures
+		End            internal.Regex
+		EndCaptures    internal.Captures
 		Patterns       []Pattern
 		owner          *Language // needed for include directives
 		cachedData     string
 		cachedPat      *Pattern
 		cachedPatterns []*Pattern
-		cachedMatch    textmate.MatchObject
+		cachedMatch    internal.MatchObject
 		hits           int
 		misses         int
 	}
@@ -202,38 +189,7 @@ func (r *RootPattern) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &r.Patterns)
 }
 
-func (c *Captures) UnmarshalJSON(data []byte) error {
-	tmp := make(map[string]Named)
-	if err := json.Unmarshal(data, &tmp); err != nil {
-		return err
-	}
-	for k, v := range tmp {
-		i, _ := strconv.ParseInt(k, 10, 32)
-		*c = append(*c, Capture{Key: int(i), Named: v})
-	}
-	sort.Sort(c)
-	return nil
-}
-
-func (c *Captures) Len() int {
-	return len(*c)
-}
-
-func (c *Captures) Less(i, j int) bool {
-	return (*c)[i].Key < (*c)[j].Key
-}
-
-func (c *Captures) Swap(i, j int) {
-	(*c)[i], (*c)[j] = (*c)[j], (*c)[i]
-}
-
-func (c *Captures) copy() *Captures {
-	ret := make(Captures, len(*c))
-	copy(ret, *c)
-	return &ret
-}
-
-func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret textmate.MatchObject) {
+func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
 	startIdx := -1
 	for i := 0; i < len(p.cachedPatterns); {
 		ip, im := p.cachedPatterns[i].Cache(data, pos)
@@ -258,7 +214,7 @@ func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret textmate.M
 	return
 }
 
-func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret textmate.MatchObject) {
+func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
 	if p.cachedData == data {
 		if p.cachedMatch == nil {
 			return nil, nil
@@ -311,7 +267,7 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret textmate.MatchO
 	return
 }
 
-func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, mo textmate.MatchObject, parent *parser.Node, capt Captures) {
+func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, mo internal.MatchObject, parent *parser.Node, capt internal.Captures) {
 	ranges := make([]text.Region, len(mo)/2)
 	parentIndex := make([]int, len(ranges))
 	parents := make([]*parser.Node, len(parentIndex))
@@ -350,7 +306,7 @@ func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource, 
 	}
 }
 
-func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo textmate.MatchObject) (ret *parser.Node) {
+func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo internal.MatchObject) (ret *parser.Node) {
 	ret = &parser.Node{Name: p.Name, Range: text.Region{A: mo[0], B: mo[1]}, P: d}
 	defer ret.UpdateRange()
 
@@ -421,15 +377,15 @@ func (p *Pattern) copy(l *Language) *Pattern {
 	ret.Include = p.Include
 	ret.Match = *p.Match.Copy()
 	if p.Captures != nil {
-		ret.Captures = *p.Captures.copy()
+		ret.Captures = *p.Captures.Copy()
 	}
 	ret.Begin = *p.Begin.Copy()
 	if p.BeginCaptures != nil {
-		ret.BeginCaptures = *p.BeginCaptures.copy()
+		ret.BeginCaptures = *p.BeginCaptures.Copy()
 	}
 	ret.End = *p.End.Copy()
 	if p.EndCaptures != nil {
-		ret.EndCaptures = *p.EndCaptures.copy()
+		ret.EndCaptures = *p.EndCaptures.Copy()
 	}
 	ret.owner = l
 	for _, pat := range p.Patterns {

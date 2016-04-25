@@ -2,7 +2,7 @@
 // Use of this source code is governed by a 2-clause
 // BSD-style license that can be found in the LICENSE file.
 
-package textmate
+package internal
 
 import (
 	"fmt"
@@ -27,7 +27,7 @@ func (r Regex) Empty() bool {
 }
 
 func (r Regex) String() string {
-	if r.re == nil {
+	if r.Empty() {
 		return "nil"
 	}
 	return fmt.Sprintf("%s   // %d, %d", r.re.String(), r.lastIndex, r.lastFound)
