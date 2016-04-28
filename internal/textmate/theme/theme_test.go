@@ -74,3 +74,25 @@ func TestLoadFromMissingFile(t *testing.T) {
 		t.Errorf("Tried to load %s, expecting an error, but didn't get one", f)
 	}
 }
+
+func TestGlobal(t *testing.T) {
+	f := "../../../testdata/package/Monokai.tmTheme"
+	th, err := Load(f)
+	if err != nil {
+		t.Fatalf("Tried to load %s, but got an error: %v", f, err)
+	}
+	gb := th.Global()
+	def := th.Settings[0].Settings
+	if got, exp := gb.Background, def["background"]; got != exp {
+		t.Errorf("Expected global settings background %s, but got %s", exp, got)
+	}
+	if got, exp := gb.Caret, def["caret"]; got != exp {
+		t.Errorf("Expected global settings caret %s, but got %s", exp, got)
+	}
+	if got, exp := gb.LineHighlight, def["lineHighlight"]; got != exp {
+		t.Errorf("Expected global settings lineHighlight %s, but got %s", exp, got)
+	}
+	if got, exp := gb.Selection, def["selection"]; got != exp {
+		t.Errorf("Expected global settings selection %s, but got %s", exp, got)
+	}
+}

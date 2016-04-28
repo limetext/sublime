@@ -7,10 +7,8 @@ package theme
 import (
 	"encoding/json"
 	"fmt"
-	"image/color"
 	"io/ioutil"
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/limetext/backend/log"
@@ -20,23 +18,21 @@ import (
 )
 
 type (
-	Color color.RGBA
-
-	// TODO(q): personally I don't care about the font style attributes
-	Settings map[string]Color
+	// For loading tmTheme files
+	Theme struct {
+		Name     string
+		Settings []ScopeSetting
+		UUID     string
+	}
 
 	ScopeSetting struct {
 		Name     string
 		Scope    string
 		Settings Settings
 	}
-	// For loading tmTheme files
-	Theme struct {
-		GutterSettings Settings
-		Name           string
-		Settings       []ScopeSetting
-		UUID           string
-	}
+
+	// TODO(q): personally I don't care about the font style attributes
+	Settings map[string]render.Colour
 )
 
 func Load(filename string) (*Theme, error) {
@@ -71,22 +67,6 @@ func (t Theme) String() (ret string) {
 	return
 }
 
-func (c Color) String() string {
-	return fmt.Sprintf("0x%02X%02X%02X%02X", c.A, c.R, c.G, c.B)
-}
-
-func (c *Color) UnmarshalJSON(data []byte) error {
-	i64, err := strconv.ParseInt(string(data[2:len(data)-1]), 16, 64)
-	if err != nil {
-		log.Warn("Couldn't properly load color from %s: %s", string(data), err)
-	}
-	c.A = uint8((i64 >> 24) & 0xff)
-	c.R = uint8((i64 >> 16) & 0xff)
-	c.G = uint8((i64 >> 8) & 0xff)
-	c.B = uint8((i64 >> 0) & 0xff)
-	return nil
-}
-
 func (s *Settings) UnmarshalJSON(data []byte) error {
 	*s = make(Settings)
 	tmp := make(map[string]json.RawMessage)
@@ -97,7 +77,7 @@ func (s *Settings) UnmarshalJSON(data []byte) error {
 		if strings.HasPrefix(k, "font") {
 			continue
 		}
-		var c Color
+		var c render.Colour
 		if err := json.Unmarshal(v, &c); err != nil {
 			return err
 		}
@@ -139,6 +119,7 @@ func (t *Theme) Spice(vr *render.ViewRegions) (ret render.Flavour) {
 	if len(t.Settings) == 0 {
 		return
 	}
+	// If the scope hadn't wanted setting we use from global settings
 	def := &t.Settings[0]
 
 	s := t.ClosestMatchingSetting(vr.Scope)
@@ -156,5 +137,18 @@ func (t *Theme) Spice(vr *render.ViewRegions) (ret render.Flavour) {
 		bg = def.Settings[bname]
 	}
 	ret.Background = render.Colour(bg)
+	return
+}
+
+func (t *Theme) Global() (ret render.Global) {
+	data, err := json.Marshal(t.Settings[0].Settings)
+	if err != nil {
+		log.Warn("Couldn't marshal global settings: %s", err)
+		return
+	}
+	err = json.Unmarshal(data, &ret)
+	if err != nil {
+		log.Warn("Couldn't unmarshal to render.Global: %s", err)
+	}
 	return
 }

@@ -1,4 +1,4 @@
-all: fmt license generate
+precommit: fmt license generate test
 
 test:
 	@go test -race $(shell go list ./... | grep -v vendor)
@@ -8,15 +8,15 @@ license:
 	@go run $(GOPATH)/src/github.com/limetext/tasks/gen_license.go
 generate:
 	@go generate $(shell go list ./... | grep -v /vendor/)
+fast_test:
+	@go test $(shell go list ./... | grep -v vendor)
 
 check_fmt:
 ifneq ($(shell gofmt -l ./ | grep -v vendor | grep -v testdata),)
 	$(error code not fmted, run make fmt. $(shell gofmt -l ./ | grep -v vendor | grep -v testdata))
 endif
-
 check_license:
 	@go run $(GOPATH)/src/github.com/limetext/tasks/gen_license.go -check
-
 check_generate: generate
 ifneq ($(shell git status --porcelain | grep "api/"),)
 	$(error generated files are not correct, run make generate. $(shell git status --porcelain | grep "api/"))
@@ -28,10 +28,10 @@ tasks:
 glide:
 	go get -v -u github.com/Masterminds/glide
 	glide install
+
 cover_dep:
 	go get -v -u github.com/mattn/goveralls
 	go get -v -u github.com/axw/gocov/gocov
-
 
 travis:
 ifeq ($(TRAVIS_OS_NAME),osx)
