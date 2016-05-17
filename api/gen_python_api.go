@@ -437,7 +437,7 @@ func main() {
 			sn),
 		},
 		{path.Join(sublimepath, "sublime_generated.go"), generatemethodsEx(reflect.TypeOf(backend.GetEditor()),
-			regexp.MustCompile("Info|HandleInput|CommandHandler|Frontend|Console|SetActiveWindow|Init|Watch|Observe|SetClipboardFuncs|DefaultPath|UserPath|AddPackagesPath|RemovePackagesPath|KeyBindings|ColorScheme|Syntax").MatchString,
+			regexp.MustCompile("Info|HandleInput|CommandHandler|Frontend|Console|SetActiveWindow|Init|Watch|Observe|SetClipboardFuncs|DefaultPath|UserPath|AddPackagesPath|RemovePackagesPath|KeyBindings|ColorScheme|Syntax|[lL]ock$").MatchString,
 			"backend.GetEditor().",
 			sn),
 		},

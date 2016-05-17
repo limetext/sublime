@@ -26,7 +26,7 @@ func newSyntax(path string) (*syntax, error) {
 
 func (s *syntax) Parser(data string) (parser.Parser, error) {
 	// we can't use syntax language(s.l) because it causes race conditions
-	// on concurrent parsing we could load the language from the file again
+	// on concurrent parsing. We could load the language from the file again
 	// but I think copying would be much faster
 	l := s.l.Copy()
 	return language.NewParser(l, []rune(data)), nil

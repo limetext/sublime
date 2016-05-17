@@ -15,10 +15,11 @@ import (
 type (
 	Regex struct {
 		re        *rubex.Regexp
-		lastIndex int
+		lastIndex int // last search start position
 		lastFound int
 	}
 
+	// Represents regex FindStringSubmatchIndex result
 	MatchObject []int
 )
 
@@ -60,26 +61,28 @@ func (r *Regex) SetYAML(tag string, value interface{}) bool {
 	return true
 }
 
+// find match for pattern in data after the pos
 func (r *Regex) Find(data string, pos int) MatchObject {
-	if r.lastIndex > pos {
-		r.lastFound = 0
+	// if the new position is less than last search start position
+	// ???: why we can't always do r.lastFound = pos?
+	if pos < r.lastIndex {
+		r.lastFound = pos
 	}
 	r.lastIndex = pos
-	for r.lastFound < len(data) {
+	for ; r.lastFound < len(data); r.lastFound++ {
 		ret := r.re.FindStringSubmatchIndex(data[r.lastFound:])
 		if ret == nil {
-			break
-		} else if (ret[0] + r.lastFound) < pos {
-			if ret[0] == 0 {
-				r.lastFound++
-			} else {
-				r.lastFound += ret[0]
-			}
-			continue
+			return nil
 		}
-		mo := MatchObject(ret)
-		mo.fix(r.lastFound)
-		return mo
+		if (ret[0] + r.lastFound) >= pos {
+			mo := MatchObject(ret)
+			mo.fix(r.lastFound)
+			return mo
+		}
+		if ret[0] != 0 {
+			// ???: why shouldn't this be r.lastFound += ret[0]
+			r.lastFound += ret[0] - 1
+		}
 	}
 	return nil
 }
@@ -99,8 +102,10 @@ func (r *Regex) Copy() *Regex {
 	return ret
 }
 
+// increments each element by add
 func (m MatchObject) fix(add int) {
 	for i := range m {
+		// ???: when m is set to -1?
 		if m[i] != -1 {
 			m[i] += add
 		}

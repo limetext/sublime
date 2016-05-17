@@ -12,8 +12,10 @@ import (
 	"github.com/limetext/util"
 )
 
+const gotmLang = "../../../testdata/package/Go.tmLanguage"
+
 func TestProviderLanguageFromScope(t *testing.T) {
-	l, _ := Load("../../../testdata/package/Go.tmLanguage")
+	l, _ := Load(gotmLang)
 
 	if _, err := provider.LanguageFromScope(l.ScopeName); err != nil {
 		t.Errorf("Tried to load %s, but got an error: %v", l.ScopeName, err)
@@ -25,7 +27,7 @@ func TestProviderLanguageFromScope(t *testing.T) {
 }
 
 func TestProviderLanguageFromFile(t *testing.T) {
-	if _, err := Load("../../../testdata/package/Go.tmLanguage"); err != nil {
+	if _, err := Load(gotmLang); err != nil {
 		t.Errorf("Tried to load ../../../testdata/Go.tmLanguage, but got an error: %v", err)
 	}
 
@@ -38,7 +40,7 @@ func TestTmLanguage(t *testing.T) {
 	files := []string{
 		"testdata/Property List (XML).tmLanguage",
 		"testdata/XML.plist",
-		"../../../testdata/package/Go.tmLanguage",
+		gotmLang,
 	}
 	for _, fn := range files {
 		if _, err := Load(fn); err != nil {
@@ -108,7 +110,7 @@ func TestTmLanguage(t *testing.T) {
 func BenchmarkLanguage(b *testing.B) {
 	b.StopTimer()
 	tst := []string{
-		"language.go",
+		"testdata/utf.go",
 		"../../../testdata/main.go",
 	}
 
@@ -124,7 +126,7 @@ func BenchmarkLanguage(b *testing.B) {
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		for j := range d0 {
-			pr, err := getParser("../../../testdata/package/Go.tmLanguage", d0[j])
+			pr, err := getParser(gotmLang, d0[j])
 			if err != nil {
 				b.Fatal(err)
 				return
@@ -136,7 +138,6 @@ func BenchmarkLanguage(b *testing.B) {
 			}
 		}
 	}
-	fmt.Println(util.Prof)
 }
 
 func getParser(fn string, data string) (*Parser, error) {

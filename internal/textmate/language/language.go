@@ -214,6 +214,16 @@ func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret internal.M
 	return
 }
 
+func (p *Pattern) initCache() {
+	if p.cachedPatterns != nil {
+		return
+	}
+	p.cachedPatterns = make([]*Pattern, len(p.Patterns))
+	for i := range p.cachedPatterns {
+		p.cachedPatterns[i] = &p.Patterns[i]
+	}
+}
+
 func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
 	if p.cachedData == data {
 		if p.cachedMatch == nil {
@@ -226,12 +236,7 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchO
 	} else {
 		p.cachedPatterns = nil
 	}
-	if p.cachedPatterns == nil {
-		p.cachedPatterns = make([]*Pattern, len(p.Patterns))
-		for i := range p.cachedPatterns {
-			p.cachedPatterns[i] = &p.Patterns[i]
-		}
-	}
+	p.initCache()
 	p.misses++
 
 	if !p.Match.Empty() {
@@ -244,7 +249,7 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchO
 			if p2, ok := p.owner.Repository[key]; ok {
 				pat, ret = p2.Cache(data, pos)
 			} else {
-				log.Fine("Not found in repository: %s", p.Include)
+				log.Fine("Not found in %s repository: %s", p.owner.Name, p.Include)
 			}
 		} else if z == '$' {
 			// TODO(q): Implement tmLanguage $ include directives
@@ -426,7 +431,8 @@ func (p *Parser) Parse() (*parser.Node, error) {
 		}
 		if ret == nil {
 			break
-		} else if nl > 0 && nl <= ret[0] {
+		}
+		if nl > 0 && nl <= ret[0] {
 			i = nl
 			for i < len(sdata) && (sdata[i] == '\n' || sdata[i] == '\r') {
 				i++
@@ -434,7 +440,6 @@ func (p *Parser) Parse() (*parser.Node, error) {
 		} else {
 			n := pat.CreateNode(sdata, i, p, ret)
 			rn.Append(n)
-
 			i = n.Range.B
 		}
 	}
