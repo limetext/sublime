@@ -49,7 +49,7 @@ func (r *RootPattern) String() (ret string) {
 	return
 }
 
-// Find the first match inside sub patterns
+// Finds the first sub pattern that has match for data after pos
 func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
 	startIdx := -1
 	for i := 0; i < len(p.cachedPatterns); {
@@ -136,20 +136,29 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchO
 	return
 }
 
+// Creates a node for each capture also takse care of parent child relationship
 func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource,
 	mo internal.MatchObject, parent *parser.Node, capt internal.Captures) {
+	// each couple of match objects will be a range
 	ranges := make([]text.Region, len(mo)/2)
+	// maps indexes from child to parent, the default int value is 0 so
+	// by default each child parent will be the parent node
 	parentIndex := make([]int, len(ranges))
 	parents := make([]*parser.Node, len(parentIndex))
 	for i := range ranges {
-		ranges[i] = text.Region{A: mo[i*2+0], B: mo[i*2+1]}
+		// converting each couple of match objects to region
+		ranges[i] = text.Region{A: mo[i*2], B: mo[i*2+1]}
+		// the first 2 elements of parents node should be parent so we
+		// could append childs easier later
 		if i < 2 {
 			parents[i] = parent
 			continue
 		}
-		r := ranges[i]
+		// if each pervious ranges covers current range we will store it
+		// in parentIndex variable, because the node with wider range
+		// should be the parent
 		for j := i - 1; j >= 0; j-- {
-			if ranges[j].Covers(r) {
+			if ranges[j].Covers(ranges[i]) {
 				parentIndex[i] = j
 				break
 			}
@@ -158,24 +167,29 @@ func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource,
 
 	for _, v := range capt {
 		i := v.Key
+		// ???: when do we set a range to -1?
 		if i >= len(parents) || ranges[i].A == -1 {
 			continue
 		}
+		// creating a node for each capture
 		child := &parser.Node{Name: v.Name, Range: ranges[i], P: d}
 		parents[i] = child
 		if i == 0 {
 			parent.Append(child)
 			continue
 		}
-		var p *parser.Node
-		for p == nil {
+		var n *parser.Node
+		// searches for child node parent then appends it
+		for n == nil {
 			i = parentIndex[i]
-			p = parents[i]
+			n = parents[i]
 		}
-		p.Append(child)
+		n.Append(child)
 	}
 }
 
+// Creates a root node for the pattern then creates a node for each capture and
+// appends them as child of root node
 func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo internal.MatchObject) (ret *parser.Node) {
 	ret = &parser.Node{Name: p.Name, Range: text.Region{A: mo[0], B: mo[1]}, P: d}
 	defer ret.UpdateRange()
@@ -201,9 +215,7 @@ func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo inter
 	)
 	for i, end = ret.Range.B, len(data); i < len(data); {
 		endmatch := p.End.Find(data, i)
-		if endmatch != nil {
-			end = endmatch[1]
-		} else {
+		if endmatch == nil {
 			if !found {
 				// oops.. no end found at all, set it to the next line
 				if e2 := strings.IndexRune(data[i:], '\n'); e2 != -1 {
@@ -212,15 +224,16 @@ func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo inter
 					end = len(data)
 				}
 				break
-			} else {
-				end = i
-				break
 			}
+			end = i
+			break
 		}
+		end = endmatch[1]
+
 		if len(p.cachedPatterns) > 0 {
-			// Might be more recursive patterns to apply BEFORE the end is reached
+			// Might be more recursive patterns to apply before the end is reached
 			pattern2, match2 := p.FirstMatch(data, i)
-			if match2 != nil && ((endmatch == nil && match2[0] < end) || (endmatch != nil && (match2[0] < endmatch[0] || match2[0] == endmatch[0] && ret.Range.A == ret.Range.B))) {
+			if match2 != nil && (match2[0] < endmatch[0] || (match2[0] == endmatch[0] && ret.Range.A == ret.Range.B)) {
 				found = true
 				r := pattern2.CreateNode(data, i, d, match2)
 				ret.Append(r)
@@ -228,12 +241,10 @@ func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo inter
 				continue
 			}
 		}
-		if endmatch != nil {
-			if len(p.EndCaptures) > 0 {
-				p.CreateCaptureNodes(data, i, d, endmatch, ret, p.EndCaptures)
-			} else {
-				p.CreateCaptureNodes(data, i, d, endmatch, ret, p.Captures)
-			}
+		if len(p.EndCaptures) > 0 {
+			p.CreateCaptureNodes(data, i, d, endmatch, ret, p.EndCaptures)
+		} else {
+			p.CreateCaptureNodes(data, i, d, endmatch, ret, p.Captures)
 		}
 		break
 	}

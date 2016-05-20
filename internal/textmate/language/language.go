@@ -15,10 +15,9 @@ import (
 	"github.com/limetext/loaders"
 )
 
-const maxiter = 10000
-
 type (
 	// For loading tmLanguage files
+	// https://manual.macromates.com/en/language_grammars
 	Language struct {
 		UnpatchedLanguage
 	}
