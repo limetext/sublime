@@ -48,12 +48,11 @@ func TestTmLanguage(t *testing.T) {
 		}
 	}
 
-	type test struct {
+	tests := []struct {
 		in  string
 		out string
 		syn string
-	}
-	tests := []test{
+	}{
 		{
 			"testdata/plist.tmlang",
 			"testdata/plist.tmlang.res",
@@ -80,28 +79,27 @@ func TestTmLanguage(t *testing.T) {
 			"source.go",
 		},
 	}
-	for _, t3 := range tests {
-
+	for _, test := range tests {
 		var d0 string
-		if d, err := ioutil.ReadFile(t3.in); err != nil {
-			t.Errorf("Couldn't load file %s: %s", t3.in, err)
+		if d, err := ioutil.ReadFile(test.in); err != nil {
+			t.Errorf("Couldn't load file %s: %s", test.in, err)
 			continue
 		} else {
 			d0 = string(d)
 		}
 
-		if pr, err := getParser(t3.syn, d0); err != nil {
+		if pr, err := getParser(test.syn, d0); err != nil {
 			t.Error(err)
 		} else if root, err := pr.Parse(); err != nil {
 			t.Error(err)
 		} else {
 			str := fmt.Sprintf("%s", root)
-			if d, err := ioutil.ReadFile(t3.out); err != nil {
-				if err := ioutil.WriteFile(t3.out, []byte(str), 0644); err != nil {
+			if d, err := ioutil.ReadFile(test.out); err != nil {
+				if err := ioutil.WriteFile(test.out, []byte(str), 0644); err != nil {
 					t.Error(err)
 				}
 			} else if diff := util.Diff(string(d), str); diff != "" {
-				t.Error(diff)
+				t.Errorf("%s:\n%s", test.in, diff)
 			}
 		}
 	}

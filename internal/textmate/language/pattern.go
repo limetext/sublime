@@ -81,16 +81,13 @@ func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret internal.M
 }
 
 func (p *Pattern) initCache() {
-	if p.cachedPatterns != nil {
-		return
-	}
 	p.cachedPatterns = make([]*Pattern, len(p.Patterns))
 	for i := range p.cachedPatterns {
 		p.cachedPatterns[i] = &p.Patterns[i]
 	}
 }
 
-// Finds what does this pattern match also caches the match for next uses.
+// Finds what does this pattern match also caches the match for the next uses.
 // Searches in order Match, Begin, Include, sub patterns.
 func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
 	if p.cachedData == data {
@@ -104,7 +101,9 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchO
 	} else {
 		p.cachedPatterns = nil
 	}
-	p.initCache()
+	if p.cachedPatterns == nil {
+		p.initCache()
+	}
 	p.misses++
 
 	if !p.Match.Empty() {
