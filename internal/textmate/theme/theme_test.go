@@ -75,13 +75,13 @@ func TestLoadFromMissingFile(t *testing.T) {
 	}
 }
 
-func TestGlobal(t *testing.T) {
+func TestGlobalSettings(t *testing.T) {
 	f := "../../../testdata/package/Monokai.tmTheme"
 	th, err := Load(f)
 	if err != nil {
 		t.Fatalf("Tried to load %s, but got an error: %v", f, err)
 	}
-	gb := th.Global()
+	gb := th.GlobalSettings()
 	def := th.Settings[0].Settings
 	if got, exp := gb.Background, def["background"]; got != exp {
 		t.Errorf("Expected global settings background %s, but got %s", exp, got)

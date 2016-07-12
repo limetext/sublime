@@ -1,4 +1,4 @@
-precommit: fmt license generate test
+precommit: generate fmt license test
 
 test:
 	@go test -race $(shell go list ./... | grep -v vendor)

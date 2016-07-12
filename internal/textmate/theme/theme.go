@@ -140,7 +140,7 @@ func (t *Theme) Spice(vr *render.ViewRegions) (ret render.Flavour) {
 	return
 }
 
-func (t *Theme) Global() (ret render.Global) {
+func (t *Theme) GlobalSettings() (ret render.Settings) {
 	data, err := json.Marshal(t.Settings[0].Settings)
 	if err != nil {
 		log.Warn("Couldn't marshal global settings: %s", err)
@@ -148,7 +148,7 @@ func (t *Theme) Global() (ret render.Global) {
 	}
 	err = json.Unmarshal(data, &ret)
 	if err != nil {
-		log.Warn("Couldn't unmarshal to render.Global: %s", err)
+		log.Warn("Couldn't unmarshal to render.Settings: %s", err)
 	}
 	return
 }
