@@ -20,9 +20,9 @@ import (
 type (
 	// For loading tmTheme files
 	Theme struct {
-		Name     string
-		Settings []ScopeSetting
-		UUID     string
+		Name          string
+		ScopeSettings []ScopeSetting
+		UUID          string
 	}
 
 	ScopeSetting struct {
@@ -61,8 +61,8 @@ func (s ScopeSetting) String() (ret string) {
 
 func (t Theme) String() (ret string) {
 	ret = fmt.Sprintf("%s - %s\n", t.Name, t.UUID)
-	for i := range t.Settings {
-		ret += fmt.Sprintf("\t%s", t.Settings[i])
+	for i := range t.ScopeSettings {
+		ret += fmt.Sprintf("\t%s", t.ScopeSettings[i])
 	}
 	return
 }
@@ -97,9 +97,9 @@ func (t *Theme) ClosestMatchingSetting(scope string) *ScopeSetting {
 			sn = sn[i+1:]
 		}
 
-		for j := range t.Settings {
-			if t.Settings[j].Scope == sn {
-				return &t.Settings[j]
+		for j := range t.ScopeSettings {
+			if t.ScopeSettings[j].Scope == sn {
+				return &t.ScopeSettings[j]
 			}
 		}
 		if i2 := strings.LastIndex(na, "."); i2 == -1 {
@@ -110,17 +110,17 @@ func (t *Theme) ClosestMatchingSetting(scope string) *ScopeSetting {
 			na = strings.TrimSpace(na[:i2])
 		}
 	}
-	return &t.Settings[0]
+	return &t.ScopeSettings[0]
 }
 
 func (t *Theme) Spice(vr *render.ViewRegions) (ret render.Flavour) {
 	pe := util.Prof.Enter("Spice")
 	defer pe.Exit()
-	if len(t.Settings) == 0 {
+	if len(t.ScopeSettings) == 0 {
 		return
 	}
 	// If the scope hadn't wanted setting we use from global settings
-	def := &t.Settings[0]
+	def := &t.ScopeSettings[0]
 
 	s := t.ClosestMatchingSetting(vr.Scope)
 	fg, ok := s.Settings["foreground"]
@@ -140,8 +140,8 @@ func (t *Theme) Spice(vr *render.ViewRegions) (ret render.Flavour) {
 	return
 }
 
-func (t *Theme) Global() (ret render.Global) {
-	data, err := json.Marshal(t.Settings[0].Settings)
+func (t *Theme) Settings() (ret render.Settings) {
+	data, err := json.Marshal(t.ScopeSettings[0].Settings)
 	if err != nil {
 		log.Warn("Couldn't marshal global settings: %s", err)
 		return
