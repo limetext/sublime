@@ -1,26 +1,4 @@
 ApplicationCommandGlue
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 CLASS_CLOSING_PARENTHESIS
 CLASS_EMPTY_LINE
 CLASS_LINE_END
@@ -43,28 +21,6 @@ DRAW_SOLID_UNDERLINE
 DRAW_SQUIGGLY_UNDERLINE
 DRAW_STIPPLED_UNDERLINE
 Edit
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 HIDDEN
 HIDE_ON_MINIMAP
 IGNORECASE
@@ -78,52 +34,8 @@ OP_NOT_REGEX_MATCH
 OP_REGEX_CONTAINS
 OP_REGEX_MATCH
 OnQueryContextGlue
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 PERSISTENT
 Region
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 	a
 	b
 	begin
@@ -137,30 +49,6 @@ Region
 	intersects
 	size
 RegionSet
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__getitem__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__len__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 	add
 	add_all
 	clear
@@ -168,28 +56,6 @@ RegionSet
 	regions
 	substract
 Settings
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 	add_on_change
 	clear_on_change
 	erase
@@ -198,51 +64,7 @@ Settings
 	id
 	set
 TextCommandGlue
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 View
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 	add_regions
 	begin_edit
 	buffer_id
@@ -290,51 +112,7 @@ View
 	window
 	word
 ViewEventGlue
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 Window
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
 	active_view
 	focus_view
 	id
@@ -344,33 +122,6 @@ Window
 	settings
 	views
 WindowCommandGlue
-	__class__
-	__delattr__
-	__dir__
-	__doc__
-	__eq__
-	__format__
-	__ge__
-	__getattribute__
-	__gt__
-	__hash__
-	__init__
-	__le__
-	__lt__
-	__ne__
-	__new__
-	__reduce__
-	__reduce_ex__
-	__repr__
-	__setattr__
-	__sizeof__
-	__str__
-	__subclasshook__
-__doc__
-__loader__
-__name__
-__package__
-__spec__
 active_window
 arch
 console

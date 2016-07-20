@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/limetext/backend"
@@ -20,9 +21,6 @@ import (
 
 // Checking if we added necessary exported functions to sublime module
 func TestSublimeApiMatchExpected(t *testing.T) {
-	// TODO: this could be much better
-	// "__*__" should be omitted and it should be same as
-	// https://www.sublimetext.com/docs/3/api_reference.html
 	const expfile = "testdata/api.txt"
 	l := py.NewLock()
 	defer l.Unlock()
@@ -33,7 +31,7 @@ func TestSublimeApiMatchExpected(t *testing.T) {
 	buf := bytes.NewBuffer(nil)
 
 	if err := printObj("", subl, buf); err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if exp, err := ioutil.ReadFile(expfile); err != nil {
 		t.Fatal(err)
@@ -48,33 +46,33 @@ func printObj(indent string, v py.Object, buf *bytes.Buffer) error {
 	if err != nil {
 		return err
 	}
+	defer dir.Decref()
 	l, ok := dir.(*py.List)
 	if !ok {
 		return fmt.Errorf("Unexpected type: %v", dir.Type())
 	}
 	sl := l.Slice()
-	if indent == "" {
-		for _, v2 := range sl {
-			if item, err := b.GetAttr(v2); err != nil {
+	for _, v2 := range sl {
+		if str := fmt.Sprint(v2); strings.HasPrefix(str, "__") {
+			continue
+		}
+		if indent != "" {
+			fmt.Fprintf(buf, "%s%s\n", indent, v2)
+			continue
+		}
+		item, err := b.GetAttr(v2)
+		if err != nil {
+			return err
+		}
+		ty := item.Type()
+		fmt.Fprintf(buf, "%s%s\n", indent, v2)
+		if ty == py.TypeType {
+			if err := printObj(indent+"\t", item, buf); err != nil {
 				return err
-			} else {
-				ty := item.Type()
-				line := fmt.Sprintf("%s%s\n", indent, v2)
-				buf.WriteString(line)
-				if ty == py.TypeType {
-					if err := printObj(indent+"\t", item, buf); err != nil {
-						return err
-					}
-				}
-				item.Decref()
 			}
 		}
-	} else {
-		for _, v2 := range sl {
-			buf.WriteString(fmt.Sprintf("%s%s\n", indent, v2))
-		}
+		item.Decref()
 	}
-	dir.Decref()
 	return nil
 }
 
@@ -93,7 +91,6 @@ func TestSublimeApi(t *testing.T) {
 	}
 
 	for _, fn := range files {
-		// TODO: better to match "*_test.py" files
 		if filepath.Ext(fn) != ".py" {
 			continue
 		}
