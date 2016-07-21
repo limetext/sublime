@@ -413,8 +413,8 @@ func main() {
 		{path.Join(sublimepath, "regionset_generated.go"), generateWrapper(reflect.TypeOf(&text.RegionSet{}), false, regexp.MustCompile("Less|Swap|Adjust|Has|Cut").MatchString)},
 		{path.Join(sublimepath, "edit_generated.go"), generateWrapper(reflect.TypeOf(&backend.Edit{}), false, regexp.MustCompile("Apply|Undo").MatchString)},
 		{path.Join(sublimepath, "view_generated.go"), generateWrapper(reflect.TypeOf(&backend.View{}), false, regexp.MustCompile("Buffer|Syntax|CommandHistory|Show|AddRegions|UndoStack|Transform|Reload|Save|Close|ExpandByClass|Erased|FileChanged|Inserted|Find$|^Status|Word|Line|Substr|FullLine|ChangeCount|FileName|^Name|RowCol|SetName|Size|TextPoint|AddObserver").MatchString)},
-		{path.Join(sublimepath, "window_generated.go"), generateWrapper(reflect.TypeOf(&backend.Window{}), false, regexp.MustCompile("OpenFile|SetActiveView|Close").MatchString)},
-		{path.Join(sublimepath, "settings_generated.go"), generateWrapper(reflect.TypeOf(&text.Settings{}), false, regexp.MustCompile("Parent|Set|Get|UnmarshalJSON|MarshalJSON").MatchString)},
+		{path.Join(sublimepath, "window_generated.go"), generateWrapper(reflect.TypeOf(&backend.Window{}), false, regexp.MustCompile("OpenFile|SetActiveView|Close|Project$").MatchString)},
+		{path.Join(sublimepath, "settings_generated.go"), generateWrapper(reflect.TypeOf(&text.Settings{}), false, regexp.MustCompile("Parent|Set|Get|UnmarshalJSON|MarshalJSON|Int|Bool|String").MatchString)},
 		{path.Join(sublimepath, "view_buffer_generated.go"), generatemethodsEx(
 			reflect.TypeOf(text.NewBuffer()),
 			regexp.MustCompile("Erase|Insert|Substr|SetFile|AddCallback|AddObserver|RemoveObserver|Data|Runes|Settings|Index|Close|Unlock|Lock|String").MatchString,
@@ -462,7 +462,7 @@ func main() {
 			import (
 				"fmt"
 
-				"github.com/limetext/gopy/lib"
+				"github.com/limetext/gopy"
 				"github.com/limetext/backend"
 				"github.com/limetext/text"
 			)

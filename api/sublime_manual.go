@@ -10,7 +10,7 @@ import (
 
 	"github.com/limetext/backend"
 	"github.com/limetext/backend/log"
-	"github.com/limetext/gopy/lib"
+	"github.com/limetext/gopy"
 )
 
 func sublime_ErrorMessage(tu *py.Tuple) (py.Object, error) {

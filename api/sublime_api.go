@@ -10,68 +10,66 @@ import (
 	"github.com/limetext/backend"
 	"github.com/limetext/backend/log"
 	"github.com/limetext/backend/render"
-	"github.com/limetext/gopy/lib"
+	"github.com/limetext/gopy"
 	"github.com/limetext/util"
 )
 
-var (
-	classes = []struct {
-		name string
-		c    *py.Class
-	}{
-		{"Region", &_regionClass},
-		{"RegionSet", &_region_setClass},
-		{"View", &_viewClass},
-		{"Window", &_windowClass},
-		{"Edit", &_editClass},
-		{"Settings", &_settingsClass},
-		{"WindowCommandGlue", &_windowCommandGlueClass},
-		{"TextCommandGlue", &_textCommandGlueClass},
-		{"ApplicationCommandGlue", &_applicationCommandGlueClass},
-		{"OnQueryContextGlue", &_onQueryContextGlueClass},
-		{"ViewEventGlue", &_viewEventGlueClass},
-	}
+var classes = []struct {
+	name string
+	c    *py.Class
+}{
+	{"Region", &_regionClass},
+	{"RegionSet", &_region_setClass},
+	{"View", &_viewClass},
+	{"Window", &_windowClass},
+	{"Edit", &_editClass},
+	{"Settings", &_settingsClass},
+	{"WindowCommandGlue", &_windowCommandGlueClass},
+	{"TextCommandGlue", &_textCommandGlueClass},
+	{"ApplicationCommandGlue", &_applicationCommandGlueClass},
+	{"OnQueryContextGlue", &_onQueryContextGlueClass},
+	{"ViewEventGlue", &_viewEventGlueClass},
+}
 
-	constants = []struct {
-		name     string
-		constant int
-	}{
-		{"OP_EQUAL", int(util.OpEqual)},
-		{"OP_NOT_EQUAL", int(util.OpNotEqual)},
-		{"OP_REGEX_MATCH", int(util.OpRegexMatch)},
-		{"OP_NOT_REGEX_MATCH", int(util.OpNotRegexMatch)},
-		{"OP_REGEX_CONTAINS", int(util.OpRegexContains)},
-		{"OP_NOT_REGEX_CONTAINS", int(util.OpNotRegexContains)},
-		{"INHIBIT_WORD_COMPLETIONS", 0},
-		{"INHIBIT_EXPLICIT_COMPLETIONS", 0},
-		{"LITERAL", int(backend.IGNORECASE)},
-		{"IGNORECASE", int(backend.LITERAL)},
-		{"CLASS_WORD_START", int(backend.CLASS_WORD_START)},
-		{"CLASS_WORD_END", int(backend.CLASS_WORD_END)},
-		{"CLASS_PUNCTUATION_START", int(backend.CLASS_PUNCTUATION_START)},
-		{"CLASS_PUNCTUATION_END", int(backend.CLASS_PUNCTUATION_END)},
-		{"CLASS_SUB_WORD_START", int(backend.CLASS_SUB_WORD_START)},
-		{"CLASS_SUB_WORD_END", int(backend.CLASS_SUB_WORD_END)},
-		{"CLASS_LINE_START", int(backend.CLASS_LINE_START)},
-		{"CLASS_LINE_END", int(backend.CLASS_LINE_END)},
-		{"CLASS_EMPTY_LINE", int(backend.CLASS_EMPTY_LINE)},
-		{"CLASS_MIDDLE_WORD", int(backend.CLASS_MIDDLE_WORD)},
-		{"CLASS_WORD_START_WITH_PUNCTUATION", int(backend.CLASS_WORD_START_WITH_PUNCTUATION)},
-		{"CLASS_WORD_END_WITH_PUNCTUATION", int(backend.CLASS_WORD_END_WITH_PUNCTUATION)},
-		{"CLASS_OPENING_PARENTHESIS", int(backend.CLASS_OPENING_PARENTHESIS)},
-		{"CLASS_CLOSING_PARENTHESIS", int(backend.CLASS_CLOSING_PARENTHESIS)},
-		{"DRAW_EMPTY", int(render.DRAW_EMPTY)},
-		{"HIDE_ON_MINIMAP", int(render.HIDE_ON_MINIMAP)},
-		{"DRAW_EMPTY_AS_OVERWRITE", int(render.DRAW_EMPTY_AS_OVERWRITE)},
-		{"DRAW_NO_FILL", int(render.DRAW_NO_FILL)},
-		{"DRAW_NO_OUTLINE", int(render.DRAW_NO_OUTLINE)},
-		{"DRAW_SOLID_UNDERLINE", int(render.DRAW_SOLID_UNDERLINE)},
-		{"DRAW_STIPPLED_UNDERLINE", int(render.DRAW_STIPPLED_UNDERLINE)},
-		{"DRAW_SQUIGGLY_UNDERLINE", int(render.DRAW_SQUIGGLY_UNDERLINE)},
-		{"PERSISTENT", int(render.PERSISTENT)},
-		{"HIDDEN", int(render.HIDDEN)},
-	}
-)
+var constants = []struct {
+	name     string
+	constant int
+}{
+	{"OP_EQUAL", int(util.OpEqual)},
+	{"OP_NOT_EQUAL", int(util.OpNotEqual)},
+	{"OP_REGEX_MATCH", int(util.OpRegexMatch)},
+	{"OP_NOT_REGEX_MATCH", int(util.OpNotRegexMatch)},
+	{"OP_REGEX_CONTAINS", int(util.OpRegexContains)},
+	{"OP_NOT_REGEX_CONTAINS", int(util.OpNotRegexContains)},
+	{"INHIBIT_WORD_COMPLETIONS", 0},
+	{"INHIBIT_EXPLICIT_COMPLETIONS", 0},
+	{"LITERAL", int(backend.IGNORECASE)},
+	{"IGNORECASE", int(backend.LITERAL)},
+	{"CLASS_WORD_START", int(backend.CLASS_WORD_START)},
+	{"CLASS_WORD_END", int(backend.CLASS_WORD_END)},
+	{"CLASS_PUNCTUATION_START", int(backend.CLASS_PUNCTUATION_START)},
+	{"CLASS_PUNCTUATION_END", int(backend.CLASS_PUNCTUATION_END)},
+	{"CLASS_SUB_WORD_START", int(backend.CLASS_SUB_WORD_START)},
+	{"CLASS_SUB_WORD_END", int(backend.CLASS_SUB_WORD_END)},
+	{"CLASS_LINE_START", int(backend.CLASS_LINE_START)},
+	{"CLASS_LINE_END", int(backend.CLASS_LINE_END)},
+	{"CLASS_EMPTY_LINE", int(backend.CLASS_EMPTY_LINE)},
+	{"CLASS_MIDDLE_WORD", int(backend.CLASS_MIDDLE_WORD)},
+	{"CLASS_WORD_START_WITH_PUNCTUATION", int(backend.CLASS_WORD_START_WITH_PUNCTUATION)},
+	{"CLASS_WORD_END_WITH_PUNCTUATION", int(backend.CLASS_WORD_END_WITH_PUNCTUATION)},
+	{"CLASS_OPENING_PARENTHESIS", int(backend.CLASS_OPENING_PARENTHESIS)},
+	{"CLASS_CLOSING_PARENTHESIS", int(backend.CLASS_CLOSING_PARENTHESIS)},
+	{"DRAW_EMPTY", int(render.DRAW_EMPTY)},
+	{"HIDE_ON_MINIMAP", int(render.HIDE_ON_MINIMAP)},
+	{"DRAW_EMPTY_AS_OVERWRITE", int(render.DRAW_EMPTY_AS_OVERWRITE)},
+	{"DRAW_NO_FILL", int(render.DRAW_NO_FILL)},
+	{"DRAW_NO_OUTLINE", int(render.DRAW_NO_OUTLINE)},
+	{"DRAW_SOLID_UNDERLINE", int(render.DRAW_SOLID_UNDERLINE)},
+	{"DRAW_STIPPLED_UNDERLINE", int(render.DRAW_STIPPLED_UNDERLINE)},
+	{"DRAW_SQUIGGLY_UNDERLINE", int(render.DRAW_SQUIGGLY_UNDERLINE)},
+	{"PERSISTENT", int(render.PERSISTENT)},
+	{"HIDDEN", int(render.HIDDEN)},
+}
 
 func init() {
 	l := py.InitAndLock()

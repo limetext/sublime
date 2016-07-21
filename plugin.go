@@ -9,7 +9,7 @@ import (
 
 	"github.com/limetext/backend/log"
 	"github.com/limetext/backend/packages"
-	"github.com/limetext/gopy/lib"
+	"github.com/limetext/gopy"
 )
 
 // Sublime plugin which is a single python file

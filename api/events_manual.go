@@ -9,7 +9,7 @@ import (
 
 	"github.com/limetext/backend"
 	"github.com/limetext/backend/log"
-	"github.com/limetext/gopy/lib"
+	"github.com/limetext/gopy"
 	"github.com/limetext/text"
 	"github.com/limetext/util"
 )
