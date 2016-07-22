@@ -6,7 +6,8 @@ package api
 
 import (
 	"fmt"
-	"github.com/limetext/gopy/lib"
+
+	"github.com/limetext/gopy"
 )
 
 func (o *Settings) Py_get(tu *py.Tuple, kw *py.Dict) (py.Object, error) {
