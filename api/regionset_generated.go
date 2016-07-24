@@ -130,19 +130,7 @@ func (o *RegionSet) PySeqLen() int64 {
 	return int64(o.data.Len())
 }
 
-func (o *RegionSet) Py_regions() (py.Object, error) {
-	ret0 := o.data.Regions()
-	var err error
-	var pyret0 py.Object
-
-	pyret0, err = toPython(ret0)
-	if err != nil {
-		return nil, err
-	}
-	return pyret0, err
-}
-
-func (o *RegionSet) Py_substract(tu *py.Tuple) (py.Object, error) {
+func (o *RegionSet) Py_subtract(tu *py.Tuple) (py.Object, error) {
 	var (
 		arg1 text.Region
 	)
@@ -153,12 +141,12 @@ func (o *RegionSet) Py_substract(tu *py.Tuple) (py.Object, error) {
 			return nil, err2
 		} else {
 			if v2, ok := v3.(text.Region); !ok {
-				return nil, fmt.Errorf("Expected type text.Region for text.RegionSet.Substract() arg1, not %s", v.Type())
+				return nil, fmt.Errorf("Expected type text.Region for text.RegionSet.Subtract() arg1, not %s", v.Type())
 			} else {
 				arg1 = v2
 			}
 		}
 	}
-	o.data.Substract(arg1)
+	o.data.Subtract(arg1)
 	return toPython(nil)
 }

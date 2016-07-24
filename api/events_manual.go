@@ -88,14 +88,6 @@ func (c *ViewEventGlue) onEvent(v *backend.View) {
 	}
 	defer pv.Decref()
 	log.Fine("onEvent: %v, %v, %v", c, c.inner, pv)
-	// interrupt := true
-	// defer func() { interrupt = false }()
-	// go func() {
-	// 	<-time.After(time.Second * 5)
-	// 	if interrupt {
-	// 		py.SetInterrupt()
-	// 	}
-	// }()
 
 	if ret, err := c.inner.Base().CallFunctionObjArgs(pv); err != nil {
 		log.Error(err)
@@ -157,14 +149,6 @@ func (c *OnQueryContextGlue) onQueryContext(v *backend.View, key string, operato
 		return backend.Unknown
 	}
 	defer pm.Decref()
-	// interrupt := true
-	// defer func() { interrupt = false }()
-	// go func() {
-	// 	<-time.After(time.Second * 5)
-	// 	if interrupt {
-	// 		py.SetInterrupt()
-	// 	}
-	// }()
 
 	if ret, err = c.inner.Base().CallFunctionObjArgs(pv, pk, po, poa, pm); err != nil {
 		log.Error(err)

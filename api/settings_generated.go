@@ -137,15 +137,3 @@ func (o *Settings) Py_has(tu *py.Tuple) (py.Object, error) {
 	}
 	return pyret0, err
 }
-
-func (o *Settings) Py_id() (py.Object, error) {
-	ret0 := o.data.Id()
-	var err error
-	var pyret0 py.Object
-
-	pyret0, err = toPython(ret0)
-	if err != nil {
-		return nil, err
-	}
-	return pyret0, err
-}

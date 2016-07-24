@@ -16,8 +16,6 @@ imports:
   version: 35a86f6ef9164485cbf3b9b9d058c6debe40aa21
 - name: github.com/limetext/gopy
   version: 8794df5582d0d3c9bba659ee4e097c75bbf90b97
-  subpackages:
-  - lib
 - name: github.com/limetext/loaders
   version: 06edf5a137bbe153db6c5e1438bc896e1c4df307
   subpackages:

@@ -81,34 +81,6 @@ func (o *Region) Py_begin() (py.Object, error) {
 	return pyret0, err
 }
 
-func (o *Region) Py_clip(tu *py.Tuple) (py.Object, error) {
-	var (
-		arg1 text.Region
-	)
-	if v, err := tu.GetItem(0); err != nil {
-		return nil, err
-	} else {
-		if v3, err2 := fromPython(v); err2 != nil {
-			return nil, err2
-		} else {
-			if v2, ok := v3.(text.Region); !ok {
-				return nil, fmt.Errorf("Expected type text.Region for text.Region.Clip() arg1, not %s", v.Type())
-			} else {
-				arg1 = v2
-			}
-		}
-	}
-	ret0 := o.data.Clip(arg1)
-	var err error
-	var pyret0 py.Object
-
-	pyret0, err = toPython(ret0)
-	if err != nil {
-		return nil, err
-	}
-	return pyret0, err
-}
-
 func (o *Region) Py_contains(tu *py.Tuple) (py.Object, error) {
 	var (
 		arg1 int
@@ -155,34 +127,6 @@ func (o *Region) Py_cover(tu *py.Tuple) (py.Object, error) {
 		}
 	}
 	ret0 := o.data.Cover(arg1)
-	var err error
-	var pyret0 py.Object
-
-	pyret0, err = toPython(ret0)
-	if err != nil {
-		return nil, err
-	}
-	return pyret0, err
-}
-
-func (o *Region) Py_covers(tu *py.Tuple) (py.Object, error) {
-	var (
-		arg1 text.Region
-	)
-	if v, err := tu.GetItem(0); err != nil {
-		return nil, err
-	} else {
-		if v3, err2 := fromPython(v); err2 != nil {
-			return nil, err2
-		} else {
-			if v2, ok := v3.(text.Region); !ok {
-				return nil, fmt.Errorf("Expected type text.Region for text.Region.Covers() arg1, not %s", v.Type())
-			} else {
-				arg1 = v2
-			}
-		}
-	}
-	ret0 := o.data.Covers(arg1)
 	var err error
 	var pyret0 py.Object
 

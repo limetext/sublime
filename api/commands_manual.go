@@ -143,13 +143,6 @@ func (c *CommandGlue) Description() string {
 }
 
 func pyError(err error) error {
-	// if m, err := py.Import("sys"); err == nil {
-	// 	defer m.Decref()
-	// 	if i, err := m.Dict().GetItemString("last_traceback"); err == nil {
-	// 		defer i.Decref()
-	// 		log.LogDebug("%v", i)
-	// 	}
-	// }
 	return fmt.Errorf("%v", err)
 }
 
@@ -184,14 +177,6 @@ func (c *TextCommandGlue) Run(v *backend.View, e *backend.Edit) error {
 	}
 	defer obj.Decref()
 	init.Exit()
-	// interrupt := true
-	// defer func() { interrupt = false }()
-	// go func() {
-	// 	<-time.After(time.Second * 5)
-	// 	if interrupt {
-	// 		py.SetInterrupt()
-	// 	}
-	// }()
 	exec := util.Prof.Enter("tc.exec")
 	defer exec.Exit()
 	if obj.Base().HasAttrString("run_") {
@@ -238,14 +223,6 @@ func (c *WindowCommandGlue) Run(w *backend.Window) error {
 		return pyError(err)
 	}
 	defer pyargs.Decref()
-	// interrupt := true
-	// defer func() { interrupt = false }()
-	// go func() {
-	// 	<-time.After(time.Second * 5)
-	// 	if interrupt {
-	// 		py.SetInterrupt()
-	// 	}
-	// }()
 
 	if obj, err = c.inner.Base().CallFunctionObjArgs(pyw); err != nil {
 		return pyError(err)
@@ -271,14 +248,6 @@ func (c *ApplicationCommandGlue) Run() error {
 		return pyError(err)
 	}
 	defer pyargs.Decref()
-	// interrupt := true
-	// defer func() { interrupt = false }()
-	// go func() {
-	// 	<-time.After(time.Second * 5)
-	// 	if interrupt {
-	// 		py.SetInterrupt()
-	// 	}
-	// }()
 
 	obj, err := c.inner.Base().CallFunctionObjArgs()
 	if err != nil {
