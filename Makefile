@@ -10,6 +10,8 @@ generate:
 	@go generate $(shell go list ./... | grep -v /vendor/)
 fast_test:
 	@go test $(shell go list ./... | grep -v vendor)
+report:
+	@go run cmd/report/main.go
 
 check_fmt:
 ifneq ($(shell gofmt -l ./ | grep -v vendor | grep -v testdata),)
