@@ -39,7 +39,7 @@ func (r *Regex) UnmarshalJSON(data []byte) error {
 	str = strings.Replace(str, "\\\\", "\\", -1)
 	str = strings.Replace(str, "\\n", "\n", -1)
 	str = strings.Replace(str, "\\t", "\t", -1)
-	if re, err := rubex.Compile(str); err != nil {
+	if re, err := rubex.CompileWithOption(str, rubex.ONIG_OPTION_CAPTURE_GROUP); err != nil {
 		log.Warn("Couldn't compile language pattern %s: %s", str, err)
 	} else {
 		r.re = re
@@ -52,7 +52,7 @@ func (r *Regex) SetYAML(tag string, value interface{}) bool {
 	if !ok {
 		return false
 	}
-	if re, err := rubex.Compile(str); err != nil {
+	if re, err := rubex.CompileWithOption(str, rubex.ONIG_OPTION_CAPTURE_GROUP); err != nil {
 		log.Warn("Couldn't compile language pattern %s: %s", str, err)
 		return false
 	} else {
@@ -92,7 +92,7 @@ func (r *Regex) Copy() *Regex {
 	if r.re == nil {
 		return ret
 	}
-	if re, err := rubex.Compile(fmt.Sprint(r.re)); err != nil {
+	if re, err := rubex.CompileWithOption(fmt.Sprint(r.re), rubex.ONIG_OPTION_CAPTURE_GROUP); err != nil {
 		log.Warn("Error on copying regex: %s", err)
 	} else {
 		ret.re = re
