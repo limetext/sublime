@@ -17,11 +17,11 @@ type syntax struct {
 }
 
 func newSyntax(path string) (*syntax, error) {
-	l, err := language.Load(path)
-	if err != nil {
+	if l, err := language.Load(path); err != nil {
 		return nil, err
+	} else {
+		return &syntax{l: l}, nil
 	}
-	return &syntax{l: l}, nil
 }
 
 func (s *syntax) Parser(data string) (parser.Parser, error) {

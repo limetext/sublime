@@ -18,7 +18,7 @@ var (
 	pkgPath    = filepath.Join("testdata", "package")
 	pluginPath = filepath.Join("testdata", "package", "plugin.py")
 	synPath    = filepath.Join(pkgPath, "Go.tmLanguage")
-	csPath     = filepath.Join(pkgPath, "Monokai.tmTheme")
+	csPath     = filepath.Join(pkgPath, "Twilight.tmTheme")
 )
 
 func TestLoadPlugin(t *testing.T) {

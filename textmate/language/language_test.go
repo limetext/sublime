@@ -64,7 +64,7 @@ func TestTmLanguage(t *testing.T) {
 			"text.xml.plist",
 		},
 		{
-			"../../testdata/main.go",
+			"testdata/main.go",
 			"testdata/main.go.res",
 			"source.go",
 		},
@@ -109,7 +109,7 @@ func BenchmarkLanguage(b *testing.B) {
 	b.StopTimer()
 	tst := []string{
 		"testdata/utf.go",
-		"../../testdata/main.go",
+		"testdata/main.go",
 	}
 
 	var d0 []string

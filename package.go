@@ -14,31 +14,23 @@ import (
 	"github.com/limetext/backend/log"
 	"github.com/limetext/backend/packages"
 	_ "github.com/limetext/sublime/api"
-	"github.com/limetext/sublime/textmate/theme"
 	"github.com/limetext/text"
 )
 
-type (
-	// Represents a sublime package
-	// TODO: iss#71
-	pkg struct {
-		dir  string
-		name string
-		text.HasSettings
-		keys.HasKeyBindings
-		platformSettings *text.HasSettings
-		defaultSettings  *text.HasSettings
-		defaultKB        *keys.HasKeyBindings
-		plugins          map[string]*plugin
-		syntaxes         map[string]*syntax
-		colorSchemes     map[string]*colorScheme
-	}
-
-	// wrapper arount Theme implements backend.ColorScheme
-	colorScheme struct {
-		*theme.Theme
-	}
-)
+// Represents a sublime package
+// TODO: iss#71
+type pkg struct {
+	dir  string
+	name string
+	text.HasSettings
+	keys.HasKeyBindings
+	platformSettings *text.HasSettings
+	defaultSettings  *text.HasSettings
+	defaultKB        *keys.HasKeyBindings
+	plugins          map[string]*plugin
+	syntaxes         map[string]*syntax
+	colorSchemes     map[string]*colorScheme
+}
 
 func newPKG(dir string) packages.Package {
 	p := &pkg{
@@ -126,13 +118,12 @@ func (p *pkg) loadPlugin(path string) {
 
 func (p *pkg) loadColorScheme(path string) {
 	log.Fine("Loading %s package color scheme %s", p.Name(), path)
-	tm, err := theme.Load(path)
+	cs, err := newColorScheme(path)
 	if err != nil {
 		log.Warn("Error loading %s color scheme %s: %s", p.Name(), path, err)
 		return
 	}
 
-	cs := &colorScheme{tm}
 	p.colorSchemes[path] = cs
 	backend.GetEditor().AddColorScheme(path, cs)
 }
@@ -193,17 +184,6 @@ func (p *pkg) scan(path string, info os.FileInfo, err error) error {
 		p.loadSyntax(path)
 	}
 	return nil
-}
-
-func (c *colorScheme) Name() string {
-	return c.Theme.Name
-}
-
-func isColorScheme(path string) bool {
-	if filepath.Ext(path) == ".tmTheme" {
-		return true
-	}
-	return false
 }
 
 func pkgName(dir string) string {
