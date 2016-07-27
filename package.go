@@ -14,7 +14,7 @@ import (
 	"github.com/limetext/backend/log"
 	"github.com/limetext/backend/packages"
 	_ "github.com/limetext/sublime/api"
-	"github.com/limetext/sublime/internal/textmate/theme"
+	"github.com/limetext/sublime/textmate/theme"
 	"github.com/limetext/text"
 )
 

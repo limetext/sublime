@@ -4,9 +4,7 @@
 
 package syntax
 
-import (
-	"github.com/limetext/sublime/internal"
-)
+import "github.com/limetext/sublime/textmate"
 
 type (
 	Context []Pattern
@@ -16,9 +14,9 @@ type (
 		MetaScope            string `yaml:"meta_scope"`
 		MetaContentScope     string `yaml:"meta_content_scope"`
 		MetaIncludePrototype string `yaml:"meta_include_prototype"`
-		Match                internal.Regex
+		Match                textmate.Regex
 		Scope                string
-		Captures             internal.Captures
+		Captures             textmate.Captures
 		Push                 Context
 		Pop                  bool
 		Set                  string

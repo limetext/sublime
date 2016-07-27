@@ -20,7 +20,7 @@ func TestLoad(t *testing.T) {
 	}
 	tests := []Test{
 		{
-			"../../../testdata/package/Monokai.tmTheme",
+			"../../testdata/package/Monokai.tmTheme",
 			"testdata/Monokai.tmTheme.res",
 		},
 	}
@@ -47,7 +47,7 @@ func TestLoad(t *testing.T) {
 }
 
 func TestLoadFromPlist(t *testing.T) {
-	f := "../../../testdata/package/Monokai.tmTheme"
+	f := "../../testdata/package/Monokai.tmTheme"
 	th, err := Load(f)
 	if err != nil {
 		t.Errorf("Tried to load %s, but got an error: %v", f, err)
@@ -76,7 +76,7 @@ func TestLoadFromMissingFile(t *testing.T) {
 }
 
 func TestGlobalSettings(t *testing.T) {
-	f := "../../../testdata/package/Monokai.tmTheme"
+	f := "../../testdata/package/Monokai.tmTheme"
 	th, err := Load(f)
 	if err != nil {
 		t.Fatalf("Tried to load %s, but got an error: %v", f, err)

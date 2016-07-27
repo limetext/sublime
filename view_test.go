@@ -8,56 +8,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/rand"
-	"reflect"
 	"sync"
 	"testing"
 	"time"
 
 	"github.com/limetext/backend"
-	"github.com/limetext/sublime/internal/textmate/theme"
+	"github.com/limetext/sublime/textmate/theme"
 	"github.com/limetext/text"
 	"github.com/limetext/util"
 )
-
-func TestViewTransform(t *testing.T) {
-	w := backend.GetEditor().NewWindow()
-	defer w.Close()
-
-	v := w.NewFile()
-	defer func() {
-		v.SetScratch(true)
-		v.Close()
-	}()
-
-	tm, err := theme.Load("testdata/package/Monokai.tmTheme")
-	backend.GetEditor().AddColorScheme("test", &colorScheme{tm})
-	v.Settings().Set("colour_scheme", "test")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	d, err := ioutil.ReadFile("testdata/view.go")
-	if err != nil {
-		t.Fatal(err)
-	}
-	e := v.BeginEdit()
-	v.Insert(e, 0, string(d))
-	v.EndEdit(e)
-
-	if v.Transform(text.Region{A: 0, B: 100}) != nil {
-		t.Error("Expected view.Transform return nil when the syntax isn't set yet")
-	}
-
-	v.Settings().Set("syntax", "testdata/package/Go.tmLanguage")
-
-	time.Sleep(time.Second)
-	a := v.Transform(text.Region{A: 0, B: 100}).Transcribe()
-	v.Transform(text.Region{A: 100, B: 200}).Transcribe()
-	c := v.Transform(text.Region{A: 0, B: 100}).Transcribe()
-	if !reflect.DeepEqual(a, c) {
-		t.Errorf("not equal:\n%v\n%v", a, c)
-	}
-}
 
 func BenchmarkViewTransformTranscribe(b *testing.B) {
 	b.StopTimer()
@@ -229,15 +188,27 @@ func TestViewStress(t *testing.T) {
 	}
 	backend.GetEditor().AddSyntax(syntax, syn)
 	v.Settings().Set("syntax", syntax)
-	for i := 0; i < 1000; i++ {
-		e := v.BeginEdit()
-		for i := 0; i < 100; i++ {
-			v.Insert(e, 0, "h")
+
+	done := make(chan bool)
+	go func() {
+		for i := 0; i < 1000; i++ {
+			e := v.BeginEdit()
+			for i := 0; i < 100; i++ {
+				v.Insert(e, 0, "h")
+			}
+			for i := 0; i < 100; i++ {
+				v.Erase(e, text.Region{A: 0, B: 1})
+			}
+			v.EndEdit(e)
 		}
-		for i := 0; i < 100; i++ {
-			v.Erase(e, text.Region{A: 0, B: 1})
-		}
-		v.EndEdit(e)
+		done <- true
+	}()
+
+	select {
+	case <-done:
+		break
+	case <-time.After(2 * time.Minute):
+		t.Error("Stress test took too long, something is not right")
 	}
 }
 

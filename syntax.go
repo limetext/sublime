@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/limetext/backend/parser"
-	"github.com/limetext/sublime/internal/textmate/language"
+	"github.com/limetext/sublime/textmate/language"
 )
 
 // wrapper around Language implementing backend.Syntax interface

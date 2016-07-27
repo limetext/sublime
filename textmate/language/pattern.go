@@ -10,27 +10,27 @@ import (
 	"strings"
 
 	"github.com/limetext/backend/log"
-	"github.com/limetext/sublime/internal"
+	"github.com/limetext/sublime/textmate"
 	"github.com/limetext/text"
 	"github.com/quarnster/parser"
 )
 
 type (
 	Pattern struct {
-		internal.Named
+		textmate.Named
 		Include        string
-		Match          internal.Regex
-		Captures       internal.Captures
-		Begin          internal.Regex
-		BeginCaptures  internal.Captures
-		End            internal.Regex
-		EndCaptures    internal.Captures
+		Match          textmate.Regex
+		Captures       textmate.Captures
+		Begin          textmate.Regex
+		BeginCaptures  textmate.Captures
+		End            textmate.Regex
+		EndCaptures    textmate.Captures
 		Patterns       []Pattern
 		owner          *Language // needed for include directives
 		cachedData     string
 		cachedPat      *Pattern
 		cachedPatterns []*Pattern // cached sub patterns
-		cachedMatch    internal.MatchObject
+		cachedMatch    textmate.MatchObject
 		hits           int
 		misses         int
 	}
@@ -54,7 +54,7 @@ func (r *RootPattern) String() (ret string) {
 }
 
 // Finds the first sub pattern that has match for data after pos
-func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
+func (p *Pattern) FirstMatch(data string, pos int) (pat *Pattern, ret textmate.MatchObject) {
 	startIdx := -1
 	for i := 0; i < len(p.cachedPatterns); {
 		ip, im := p.cachedPatterns[i].Cache(data, pos)
@@ -89,7 +89,7 @@ func (p *Pattern) initCache() {
 
 // Finds what does this pattern match also caches the match for the next uses.
 // Searches in order Match, Begin, Include, sub patterns.
-func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchObject) {
+func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret textmate.MatchObject) {
 	if p.cachedData == data {
 		if p.cachedMatch == nil {
 			return nil, nil
@@ -141,7 +141,7 @@ func (p *Pattern) Cache(data string, pos int) (pat *Pattern, ret internal.MatchO
 
 // Creates a node for each capture also takse care of parent child relationship
 func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource,
-	mo internal.MatchObject, parent *parser.Node, capt internal.Captures) {
+	mo textmate.MatchObject, parent *parser.Node, capt textmate.Captures) {
 	// each couple of match objects will be a range
 	ranges := make([]text.Region, len(mo)/2)
 	// maps indexes from child to parent, the default int value is 0 so
@@ -193,7 +193,7 @@ func (p *Pattern) CreateCaptureNodes(data string, pos int, d parser.DataSource,
 
 // Creates a root node for the pattern then creates a node for each capture and
 // appends them as child of root node
-func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo internal.MatchObject) (ret *parser.Node) {
+func (p *Pattern) CreateNode(data string, pos int, d parser.DataSource, mo textmate.MatchObject) (ret *parser.Node) {
 	ret = &parser.Node{Name: p.Name, Range: text.Region{A: mo[0], B: mo[1]}, P: d}
 	defer ret.UpdateRange()
 

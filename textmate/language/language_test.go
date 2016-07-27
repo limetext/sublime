@@ -12,7 +12,7 @@ import (
 	"github.com/limetext/util"
 )
 
-const gotmLang = "../../../testdata/package/Go.tmLanguage"
+const gotmLang = "../../testdata/package/Go.tmLanguage"
 
 func TestProviderLanguageFromScope(t *testing.T) {
 	l, _ := Load(gotmLang)
@@ -28,7 +28,7 @@ func TestProviderLanguageFromScope(t *testing.T) {
 
 func TestProviderLanguageFromFile(t *testing.T) {
 	if _, err := Load(gotmLang); err != nil {
-		t.Errorf("Tried to load ../../../testdata/Go.tmLanguage, but got an error: %v", err)
+		t.Errorf("Tried to load %s, but got an error: %v", gotmLang, err)
 	}
 
 	if _, err := Load("MissingFile"); err == nil {
@@ -64,7 +64,7 @@ func TestTmLanguage(t *testing.T) {
 			"text.xml.plist",
 		},
 		{
-			"../../../testdata/main.go",
+			"../../testdata/main.go",
 			"testdata/main.go.res",
 			"source.go",
 		},
@@ -109,7 +109,7 @@ func BenchmarkLanguage(b *testing.B) {
 	b.StopTimer()
 	tst := []string{
 		"testdata/utf.go",
-		"../../../testdata/main.go",
+		"../../testdata/main.go",
 	}
 
 	var d0 []string
