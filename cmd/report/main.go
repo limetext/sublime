@@ -11,7 +11,7 @@ import (
 
 	"github.com/limetext/gopy"
 	_ "github.com/limetext/sublime/api"
-	"github.com/limetext/sublime/cmd/util"
+	"github.com/limetext/sublime/internal/util"
 )
 
 func main() {

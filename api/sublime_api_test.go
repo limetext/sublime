@@ -15,7 +15,7 @@ import (
 	"github.com/limetext/backend"
 	_ "github.com/limetext/commands"
 	"github.com/limetext/gopy"
-	. "github.com/limetext/sublime/cmd/util"
+	. "github.com/limetext/sublime/internal/util"
 	"github.com/limetext/util"
 )
 
